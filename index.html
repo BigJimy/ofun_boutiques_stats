@@ -110,6 +110,29 @@ html, body {
 }
 .ui-controls select:disabled { opacity: 0.5; cursor: not-allowed; }
 
+/* Blocs de formulaires (hebdo / mensuel) */
+.form-block {
+  margin-top: 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  background: var(--bg-soft);
+  border: 0.5px solid var(--border-light);
+}
+.form-block-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--brand-red);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.form-block .ui-controls { margin-top: 0.5rem; }
+
+.ui-actions {
+  display: flex; gap: 0.75rem; align-items: center;
+  margin-top: 1.25rem;
+  flex-wrap: wrap;
+}
+
 button.primary, button.secondary {
   padding: 10px 18px;
   border-radius: 6px;
@@ -366,8 +389,8 @@ button.secondary:hover { background: var(--bg-soft); }
   <div class="ui-shell-header">
     <div class="ui-logo"><svg id="Calque_1" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 222 103"> <g> <g> <g> <path d="M103.89,29.39c.53.41,1.05.7,1.63.88.58.18,1.11.53,1.63.99.53.47.76,1.11.76,1.87s-4.08,31.81-4.08,32.22c0,.93.35,1.58,1.05,1.93s1.87.53,3.51.53h.23c1.75,0,3.04-.23,3.86-.7.82-.47,1.28-1.28,1.46-2.39l1.97-14.62,8.89-.11c1.52,0,2.58-.35,3.16-1.05s.88-1.93.88-3.74c0-1.05-.53-1.58-1.63-1.58-.35,0-1.58.06-3.68.18-2.1.12-5.74.28-6.91.28l1.4-11.16c.18-1.11.41-1.81.76-2.16.35-.35,1.17-.53,2.45-.53h2.15c1.63,0,2.69.23,3.16.64.47.41.88,1.52,1.28,3.33.29,1.52.64,2.57,1.05,3.09s.93.82,1.58.82c1.46,0,2.57-1.23,3.33-3.74.76-2.51,1.11-5.03,1.11-7.54,0-.88-.23-1.58-.64-2.04-.41-.47-1.17-.7-2.22-.76-2.74-.18-4.13-.29-9.45-.29-4.76,0-14.04.34-14.37.35-2.22.12-3.63.41-4.21.82s-.88,1.4-.88,2.92c0,.64.23,1.17.76,1.58h0Z" style="fill: #fff;"/> <path d="M136.66,41.57c.53.42,1.07.71,1.66.89.59.18,1.13.53,1.66,1.01s.77,1.13.77,1.9c0,.42-.42,2.85-1.25,7.24-.83,4.39-1.25,7.3-1.25,8.73,0,2.08.59,3.68,1.72,4.81s2.79,1.66,4.98,1.66c0,0,3.28.34,7.06-2.31,2.04-1.42,3.79-3.32,5.16-5.93-.18,1.36-.3,2.25-.3,2.67,0,3.5,1.9,5.28,5.64,5.28,2.5,0,4.81-.72,7.01-2.08s3.26-3.09,3.26-5.17c0-.65-.12-1.25-.36-1.72s-.47-.72-.72-.72c-.06,0-.53.12-1.36.3-.83.18-1.48.3-1.96.3-.72,0-1.07-.36-1.07-1.13,0-.59.36-3.86,1.12-9.79.77-5.93,1.13-9.02,1.13-9.32,0-.89-.36-1.54-1.07-1.9-.72-.36-1.9-.53-3.62-.53-1.84,0-3.14.24-3.98.71-.83.47-1.31,1.31-1.48,2.44l-1.31,10.97c-.36,2.91-1.25,5.34-2.67,7.3s-3.09,2.97-4.98,2.97c-1.25,0-1.9-.77-1.9-2.31,0-1.13.47-4.33,1.42-9.55.95-5.22,1.42-8.37,1.42-9.43,0-1.12-.47-1.9-1.42-2.37-.95-.47-2.85-.71-5.64-.71-2.55,0-4.45.18-5.63.47-1.19.3-1.96.72-2.31,1.25-.36.53-.53,1.36-.53,2.5,0,.65.23,1.19.77,1.61h-.01Z" style="fill: #fff;"/> <path d="M174.17,41.92c.53.42,1.07.72,1.66.89.59.18,1.12.53,1.66,1.01.53.47.77,1.12.77,1.9,0,.59-.42,3.98-1.19,10.08-.77,6.11-1.19,9.38-1.19,9.73,0,.95.36,1.6,1.07,1.96.72.36,1.9.53,3.5.53,0,0,2.56,0,4.28-.95.84-.47,1.31-1.31,1.48-2.44l1.07-9.02c.42-3.38,1.36-6.17,2.91-8.37,1.54-2.2,3.14-3.32,4.87-3.32.77,0,1.36.24,1.78.72.42.47.59,1.36.59,2.61,0,.95-.3,3.39-.83,7.36-.53,3.98-.83,6.53-.83,7.71,0,1.66.47,2.97,1.42,3.98s2.31,1.48,4.15,1.48c2.44,0,4.69-.72,6.82-2.2,2.14-1.48,3.2-3.14,3.2-4.98,0-.66-.12-1.25-.36-1.72s-.47-.72-.72-.72c-.06,0-.47.12-1.25.3-.77.18-1.36.3-1.78.3-.72,0-1.07-.36-1.07-1.12,0-.3.24-2.31.72-6.06.47-3.74.72-6.23.72-7.48,0-5.34-2.31-8.01-6.95-8.01-2.37,0-4.68.72-6.88,2.14-2.2,1.42-4.09,3.62-5.7,6.59.42-3.14.59-5.04.59-5.64,0-1.13-.47-1.9-1.42-2.37s-2.73-.72-5.28-.72-4.45.18-5.7.47c-1.25.3-2.02.72-2.37,1.25-.36.53-.53,1.36-.53,2.5,0,.66.24,1.19.77,1.61h0Z" style="fill: #fff;"/> </g> <g> <path d="M100.32,78.73c.43-.58.96-1.04,1.59-1.37s1.31-.49,2.05-.49c.9,0,1.63.24,2.18.71.55.47.87,1.12.94,1.94h-2.03c-.09-.31-.26-.55-.51-.71s-.55-.24-.91-.24c-.57,0-1.06.2-1.47.59s-.69.91-.8,1.57c-.04.2-.05.38-.05.53,0,.5.14.9.42,1.2.28.29.66.45,1.15.45.35,0,.68-.08.99-.25s.56-.4.77-.72h2.03c-.36.82-.9,1.47-1.63,1.93-.73.47-1.54.71-2.44.71-.65,0-1.21-.12-1.69-.38-.48-.25-.85-.61-1.11-1.07-.26-.46-.39-.99-.39-1.61,0-.27.02-.54.07-.8.13-.74.41-1.42.84-2h-.01Z" style="fill: #fff;"/> <path d="M112.01,83.19h-2.82l-.69,1.34h-1.93l4.07-7.57h2.14l1.4,7.57h-1.95l-.22-1.34h0ZM111.8,81.79l-.45-2.8-1.44,2.8h1.89Z" style="fill: #fff;"/> <path d="M120.91,80.6c-.26.36-.63.66-1.08.88-.46.23-.99.34-1.61.34h-1.15l-.49,2.71h-1.85l1.34-7.57h2.98c.79,0,1.39.18,1.79.53.4.35.61.82.61,1.42,0,.18-.01.34-.04.5-.07.44-.24.84-.5,1.2h0ZM119.54,79.39c.01-.12.02-.2.02-.25,0-.23-.07-.41-.22-.53-.15-.12-.37-.19-.67-.19h-1l-.34,1.94h.99c.69,0,1.09-.32,1.22-.97h0Z" style="fill: #fff;"/> <path d="M124.43,84.06c-.51-.36-.77-.86-.77-1.52,0-.07,0-.16.02-.29h1.92c-.02.27.04.49.2.65s.38.24.69.24c.28,0,.5-.06.66-.18s.24-.29.24-.52-.1-.42-.31-.56c-.2-.15-.53-.31-.96-.49-.42-.18-.76-.34-1.02-.49-.26-.15-.49-.36-.69-.63s-.29-.6-.29-1c0-.5.12-.93.36-1.29s.6-.65,1.04-.84.96-.29,1.53-.29c.52,0,.98.08,1.38.24.4.16.72.39.94.7.23.31.34.66.34,1.09,0,.11,0,.19,0,.24h-1.96s0-.07,0-.13c0-.2-.07-.36-.21-.49s-.34-.19-.58-.19c-.26,0-.47.07-.63.19-.16.12-.24.3-.24.51s.1.39.3.55c.2.15.51.32.94.51.42.2.77.37,1.04.54s.5.39.69.66c.2.28.29.61.29,1.02,0,.45-.12.85-.36,1.2-.23.35-.58.63-1.02.82-.45.2-.96.3-1.56.3-.82,0-1.49-.18-2-.53v-.02Z" style="fill: #fff;"/> <path d="M133.01,76.96l-.8,4.52c-.03.19-.04.31-.04.39,0,.33.09.58.28.76.19.18.47.26.83.26.43,0,.78-.12,1.06-.36s.45-.59.53-1.04l.8-4.52h1.85l-.8,4.52c-.12.69-.36,1.26-.73,1.73-.36.47-.8.82-1.33,1.05-.52.23-1.09.34-1.7.34-.79,0-1.43-.2-1.91-.61s-.73-1-.73-1.78c0-.23.02-.47.07-.73l.79-4.52h1.85,0Z" style="fill: #fff;"/> <path d="M143.41,77.49c.41.36.61.82.61,1.39,0,.17-.01.32-.04.47-.09.5-.31.95-.66,1.35s-.82.68-1.42.84l1.22,3h-2.08l-1.07-2.86h-.45l-.51,2.86h-1.85l1.34-7.57h3.09c.78,0,1.38.18,1.79.53h.01ZM142.11,79.19c0-.23-.07-.41-.22-.53-.15-.12-.36-.19-.65-.19h-1.15l-.34,1.9h1.14c.34,0,.61-.08.8-.25s.33-.4.39-.7c.01-.12.02-.19.02-.23Z" style="fill: #fff;"/> <path d="M148.26,83.12h2.42l-.25,1.4h-4.26l1.34-7.57h1.85l-1.09,6.17h0Z" style="fill: #fff;"/> <path d="M153.96,78.41l-.27,1.58h2.47l-.25,1.39h-2.47l-.3,1.69h2.79l-.26,1.45h-4.63l1.34-7.57h4.63l-.26,1.45h-2.8Z" style="fill: #fff;"/> <path d="M165.09,76.96l-.26,1.45h-3.09l-.28,1.63h2.31l-.26,1.4h-2.31l-.54,3.09h-1.85l1.34-7.57h4.93Z" style="fill: #fff;"/> <path d="M169.4,83.19h-2.82l-.69,1.34h-1.93l4.08-7.57h2.14l1.4,7.57h-1.95l-.22-1.34ZM169.19,81.79l-.45-2.8-1.44,2.8h1.89Z" style="fill: #fff;"/> <path d="M178.35,77.49c.41.36.61.82.61,1.39,0,.17-.01.32-.04.47-.09.5-.31.95-.66,1.35-.35.39-.82.68-1.42.84l1.22,3h-2.08l-1.07-2.86h-.45l-.5,2.86h-1.85l1.34-7.57h3.09c.78,0,1.38.18,1.79.53h0ZM177.06,79.19c0-.23-.07-.41-.22-.53-.15-.12-.36-.19-.65-.19h-1.15l-.34,1.9h1.15c.34,0,.61-.08.8-.25.2-.17.33-.4.38-.7.01-.12.02-.19.02-.23Z" style="fill: #fff;"/> <path d="M192.86,76.96l-3.31,7.57h-2.23l-.34-4.97-2.12,4.97h-2.23l-.58-7.57h1.97l.12,5.51,2.32-5.51h2.04l.32,5.48,2.06-5.48h2Z" style="fill: #fff;"/> <path d="M195.1,78.41l-.27,1.58h2.47l-.25,1.39h-2.47l-.3,1.69h2.79l-.26,1.45h-4.63l1.34-7.57h4.63l-.26,1.45h-2.8Z" style="fill: #fff;"/> <path d="M198.75,84.06c-.51-.36-.77-.86-.77-1.52,0-.07,0-.16.02-.29h1.92c-.02.27.04.49.2.65s.38.24.69.24c.28,0,.5-.06.66-.18s.24-.29.24-.52-.1-.42-.31-.56c-.2-.15-.53-.31-.96-.49-.42-.18-.76-.34-1.02-.49s-.49-.36-.69-.63-.29-.6-.29-1c0-.5.12-.93.36-1.29s.6-.65,1.04-.84.96-.29,1.53-.29c.52,0,.98.08,1.38.24s.72.39.94.7c.22.31.34.66.34,1.09,0,.11,0,.19,0,.24h-1.96s0-.07,0-.13c0-.2-.07-.36-.21-.49s-.34-.19-.58-.19c-.26,0-.47.07-.63.19s-.24.3-.24.51.1.39.3.55c.2.15.51.32.94.51.42.2.77.37,1.04.54s.5.39.69.66c.2.28.29.61.29,1.02,0,.45-.12.85-.36,1.2s-.58.63-1.02.82c-.45.2-.97.3-1.56.3-.82,0-1.49-.18-2-.53v-.02Z" style="fill: #fff;"/> <path d="M210.97,76.96l-.25,1.45h-2.01l-1.08,6.11h-1.85l1.08-6.11h-2.01l.26-1.45h5.86Z" style="fill: #fff;"/> </g> </g> <path d="M52.11,22.1h0c-9.6,1.53-18.66,15.98-20.39,32.75-1.15,11.08,1.2,21.06,6.16,26.04,2.39,2.42,5.28,3.52,8.38,3.23,8.65-.85,17.01-12.35,20.11-26.78.42-1.97.74-4.01.96-6.07.04-.33.07-.66.09-.99s.32-.61.66-.6c1.36.04,2.71-.01,4.04-.15,6.33-.68,10.68-3.05,15.11-7.97.28-.31.58-.65.87-1.01.17-.2.51-.11.54.15.45,3.32.58,6.74.39,10.18-1.41,25.88-20.18,48.13-41.83,49.58-.74.05-1.47.08-2.2.08-8.43,0-16.34-3.28-22.49-9.37-8.45-8.35-12.86-21.14-12.11-35.06C11.81,30.24,30.57,7.99,52.24,6.53c2.93-.19,5.79,0,8.54.55-4.21,4.83-.28,11.57-.28,11.57-.79-5.04,1.05-7.97,3.05-9.62.59-.49,1.26-.88,1.95-1.2l.1-.05.28-.13c6.48-2.54,11.21-3.04,11.21-3.04l-4.83,6.2-.7.9s.02.02.04.03c.23-.27.53-.58.85-.93,0,0,.01,0,.02.01,2.34-2.56,5.45-4.98,7.68-6.08,3.33-1.64,7.23-2.59,9.84-.59,4.64,3.55,7.45,12.42,7.45,12.42,0,0-4.7,6.76-13.11,10.67-2.93,1.36-6.24,2.5-9.85,3.09-8.15,1.32-10.73-8.54-19.84-8.59-.83,0-1.66.1-2.48.32-.02,0-.05,0-.08.02h.01Z" style="fill: #fff;"/> <path d="M94.89,22.37c-1.57,2.49-5.01,9.08-9.43,13.87s-8.78,7.28-15.12,7.96c-10.55,1.12-23.22-3.71-25.02-9.56-1.71-5.52,7.05-11.84,13.25-9.08,5.06,2.25,8.69,10.06,19.28,6.75,10.38-3.24,16.82-9.7,17.04-9.94h0Z" style="fill: #fff;"/> </g> <path d="M106.87,16.62c-7.57,5-14.2,13.43-14.4,13.69.15-.4,8.65-21.81,15.97-22.88,7.39-1.08,4.99,4.86-1.57,9.19h0Z" style="fill: #fff;"/> </svg></div>
     <div>
-      <div class="ui-shell-title">Générateur de rapport hebdomadaire — Boutiques O'Fun Park</div>
-      <div class="ui-shell-subtitle">Glissez votre fichier <code>Analyses_des_ventes.xlsx</code> et sélectionnez la semaine à présenter en Codir.</div>
+      <div class="ui-shell-title">Générateur de rapports — Boutiques O'Fun Park</div>
+      <div class="ui-shell-subtitle">Glissez votre fichier <code>Analyses_des_ventes.xlsx</code>, puis sélectionnez une semaine ou un mois à générer.</div>
     </div>
   </div>
 
@@ -377,14 +400,35 @@ button.secondary:hover { background: var(--bg-soft); }
   </div>
   <input type="file" id="fileInput" accept=".xlsx,.xls" hidden>
 
-  <div class="ui-controls">
-    <label for="weekSelect">Semaine :</label>
-    <select id="weekSelect" disabled>
-      <option value="">— Charger un fichier d'abord —</option>
-    </select>
-    <label for="visiteursInput" style="margin-left:0.5rem;">Visiteurs :</label>
-    <input type="number" id="visiteursInput" min="0" step="1" placeholder="Nb entrées parc" disabled
-           style="padding:8px 12px;border-radius:6px;border:0.5px solid var(--border);background:white;font-size:13px;font-family:inherit;width:140px;">
+  <!-- Bloc 1 : Rapport hebdomadaire -->
+  <div class="form-block">
+    <div class="form-block-title">📅 Rapport hebdomadaire</div>
+    <div class="ui-controls">
+      <label for="weekSelect">Semaine :</label>
+      <select id="weekSelect" disabled>
+        <option value="">— Charger un fichier d'abord —</option>
+      </select>
+      <label for="visiteursInput" style="margin-left:0.5rem;">Visiteurs :</label>
+      <input type="number" id="visiteursInput" min="0" step="1" placeholder="Nb entrées parc" disabled
+             style="padding:8px 12px;border-radius:6px;border:0.5px solid var(--border);background:white;font-size:13px;font-family:inherit;width:140px;">
+    </div>
+  </div>
+
+  <!-- Bloc 2 : Rapport mensuel -->
+  <div class="form-block">
+    <div class="form-block-title">🗓️ Rapport mensuel</div>
+    <div class="ui-controls">
+      <label for="monthSelect">Mois :</label>
+      <select id="monthSelect" disabled>
+        <option value="">— Charger un fichier d'abord —</option>
+      </select>
+      <label for="visiteursMonthInput" style="margin-left:0.5rem;">Visiteurs :</label>
+      <input type="number" id="visiteursMonthInput" min="0" step="1" placeholder="Nb entrées parc" disabled
+             style="padding:8px 12px;border-radius:6px;border:0.5px solid var(--border);background:white;font-size:13px;font-family:inherit;width:140px;">
+    </div>
+  </div>
+
+  <div class="ui-actions">
     <button class="primary" id="btnPrint" disabled>Imprimer / Exporter PDF</button>
     <button class="secondary" id="btnReset" disabled>Recommencer</button>
   </div>
@@ -392,13 +436,8 @@ button.secondary:hover { background: var(--bg-soft); }
   <div class="log-zone empty" id="logZone"></div>
 </div>
 
-<!-- ============ Rapport (4 pages) ============ -->
-<div class="report-container" id="reportContainer">
-  <div class="page-sheet" id="page1"></div>
-  <div class="page-sheet" id="page2"></div>
-  <div class="page-sheet" id="page3"></div>
-  <div class="page-sheet" id="page4"></div>
-</div>
+<!-- ============ Rapport (pages générées dynamiquement) ============ -->
+<div class="report-container" id="reportContainer"></div>
 
 <script>
 
@@ -532,6 +571,41 @@ function getIsoWeekRange(year, weekNum) {
   return { monday, sunday };
 }
 
+// ============================================
+// Helpers mensuels
+// ============================================
+const MOIS_FR_FULL = ["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"];
+const MOIS_FR_SHORT = ["Janv.","Févr.","Mars","Avr.","Mai","Juin","Juil.","Août","Sept.","Oct.","Nov.","Déc."];
+
+// Clé mois "YYYY-MM" depuis un objet Date
+const monthKeyOf = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+// Libellé long ex: "Avril 2026"
+const monthLabel = (key) => {
+  const [y, m] = key.split("-").map(Number);
+  return `${MOIS_FR_FULL[m - 1]} ${y}`;
+};
+const monthLabelShort = (key) => {
+  const [y, m] = key.split("-").map(Number);
+  return `${MOIS_FR_SHORT[m - 1]} ${String(y).slice(-2)}`;
+};
+// Nombre de jours dans un mois (year, month 1-12)
+const daysInMonth = (year, month) => new Date(year, month, 0).getDate();
+// Clé jour "YYYY-MM-DD" depuis un Date (en heure locale, pas UTC)
+const dayKeyOf = (d) => {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+};
+// Détermine si une semaine déborde du mois calendaire
+function isWeekPartialInMonth(weekName, year, month) {
+  const wn = semNum(weekName);
+  const { monday, sunday } = getIsoWeekRange(year, wn);
+  const first = new Date(year, month - 1, 1);
+  const last = new Date(year, month, 0);
+  return monday < first || sunday > last;
+}
+
 // Badge évolution
 const badgeFor = (p) => {
   if (p === null || p === undefined || Number.isNaN(p)) return '<span class="badge neutral">—</span>';
@@ -587,6 +661,7 @@ function parseSheetRows(workbook, sheetName) {
       pdv: r[5],
       boutique: normalizeBoutique(r[5]),
       ca_ht: Number.isFinite(prixTotal) ? prixTotal / TVA : 0,
+      _sheet: sheetName,   // ← utilisé pour agrégation par semaine
     });
   }
   return rows;
@@ -802,8 +877,170 @@ function renderDonut(categories, size = 140) {
 }
 
 // ============================================
-// SVG — Histogramme empilé (hors gants/casiers + gants/casiers)
+// SVG — Mensuels
 // ============================================
+
+// Bar chart : CA HT par semaine du mois, empilé hors/service, mention "(partielle)"
+function renderWeekBars(byWeek, year, month) {
+  const W = 600, H = 205;
+  const padL = 50, padR = 20, padT = 25, padB = 55;
+  const iw = W - padL - padR, ih = H - padT - padB;
+  const weeks = Object.keys(byWeek).sort((a, b) => semNum(a) - semNum(b));
+  const n = weeks.length;
+  if (n === 0) return `<svg viewBox="0 0 ${W} ${H}"><text x="${W/2}" y="${H/2}" font-size="11" fill="#888780" text-anchor="middle">Aucune vente</text></svg>`;
+
+  const totals = weeks.map(w => byWeek[w].ca_total);
+  const maxV = Math.max(...totals, 1) * 1.20;
+  const barW = (iw / n) * 0.55;
+  const gap = (iw / n) * 0.45;
+
+  let grid = "";
+  [0, maxV/3, 2*maxV/3, maxV].forEach((v, i) => {
+    const y = padT + ih - (v / maxV) * ih;
+    const stroke = i === 0 ? "#d3d1c7" : "#e6e4dd";
+    grid += `<line x1="${padL}" y1="${y}" x2="${W-padR}" y2="${y}" stroke="${stroke}" stroke-width="0.5"/>`;
+    grid += `<text x="${padL-5}" y="${y+3}" font-size="9" fill="#888780" text-anchor="end">${fmtMoneyK(v)}</text>`;
+  });
+
+  let bars = "";
+  weeks.forEach((w, i) => {
+    const vHors = byWeek[w].ca_hors;
+    const vServ = byWeek[w].ca_service;
+    const total = vHors + vServ;
+    const hHors = vHors > 0 ? (vHors / maxV) * ih : 0;
+    const hServ = vServ > 0 ? (vServ / maxV) * ih : 0;
+    const x = padL + i * (iw / n) + gap / 2;
+    const yHors = padT + ih - hHors;
+    const yServ = yHors - hServ;
+    const isPartial = isWeekPartialInMonth(w, year, month);
+    const op = isPartial ? "0.65" : "1";
+
+    bars += `<rect x="${x.toFixed(1)}" y="${yHors.toFixed(1)}" width="${barW.toFixed(1)}" height="${hHors.toFixed(1)}" fill="${COLOR_BRAND}" opacity="${op}"/>`;
+    if (vServ > 0) bars += `<rect x="${x.toFixed(1)}" y="${yServ.toFixed(1)}" width="${barW.toFixed(1)}" height="${hServ.toFixed(1)}" fill="${COLOR_SERV}" opacity="${op}"/>`;
+    bars += `<text x="${(x + barW/2).toFixed(1)}" y="${H-37}" font-size="10" fill="#5f5e5a" text-anchor="middle" font-weight="500">${w}</text>`;
+    if (isPartial) bars += `<text x="${(x + barW/2).toFixed(1)}" y="${H-25}" font-size="8" fill="#888780" text-anchor="middle" font-style="italic">(partielle)</text>`;
+    if (total > 0) {
+      const yTop = padT + ih - (total / maxV) * ih;
+      bars += `<text x="${(x + barW/2).toFixed(1)}" y="${(yTop-3).toFixed(1)}" font-size="9" fill="#5f5e5a" text-anchor="middle" font-weight="500">${fmtMoney(total, 0)}</text>`;
+    }
+  });
+
+  const legY = H - 6;
+  const legend = `
+    <rect x="${padL}" y="${legY-7}" width="11" height="11" fill="${COLOR_BRAND}"/>
+    <text x="${padL+16}" y="${legY+2}" font-size="10" fill="#5f5e5a">Hors gants et casiers</text>
+    <rect x="${padL+160}" y="${legY-7}" width="11" height="11" fill="${COLOR_SERV}"/>
+    <text x="${padL+176}" y="${legY+2}" font-size="10" fill="#5f5e5a">Gants et casiers</text>`;
+  return `<svg viewBox="0 0 ${W} ${H+5}" style="width:100%;height:${H+5}px">${grid}${bars}${legend}</svg>`;
+}
+
+// Courbe quotidienne : aires empilées CA total / CA hors, points sur jours avec ventes
+function renderDailyChart(byDay, monthKey) {
+  const W = 600, H = 220;
+  const padL = 50, padR = 20, padT = 20, padB = 50;
+  const iw = W - padL - padR, ih = H - padT - padB;
+  const [year, month] = monthKey.split("-").map(Number);
+  const last = daysInMonth(year, month);
+  const days = [];
+  for (let d = 1; d <= last; d++) days.push(d);
+
+  const values = days.map(d => {
+    const k = `${year}-${String(month).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+    return byDay[k] || { ca_total: 0, ca_hors: 0 };
+  });
+  const totals = values.map(v => v.ca_total);
+  const horsArr = values.map(v => v.ca_hors);
+  const maxV = Math.max(...totals, 1) * 1.10;
+  const n = days.length;
+  const xOf = (i) => padL + (i / Math.max(n - 1, 1)) * iw;
+  const yOf = (v) => padT + ih - (v / maxV) * ih;
+
+  let grid = "";
+  [0, maxV/3, 2*maxV/3, maxV].forEach((v, i) => {
+    const y = yOf(v);
+    const stroke = i === 0 ? "#d3d1c7" : "#e6e4dd";
+    grid += `<line x1="${padL}" y1="${y}" x2="${W-padR}" y2="${y}" stroke="${stroke}" stroke-width="0.5"/>`;
+    grid += `<text x="${padL-5}" y="${y+3}" font-size="9" fill="#888780" text-anchor="end">${fmtMoneyK(v)}</text>`;
+  });
+
+  let xl = "";
+  days.forEach((d, i) => {
+    if (d === 1 || d % 5 === 0 || d === last) {
+      xl += `<text x="${xOf(i)}" y="${H-30}" font-size="9" fill="#5f5e5a" text-anchor="middle">${d}</text>`;
+    }
+  });
+
+  const areaTotal = `M ${padL},${padT+ih} L ` +
+    totals.map((v, i) => `${xOf(i)},${yOf(v)}`).join(" L ") +
+    ` L ${padL+iw},${padT+ih} Z`;
+  const areaHors = `M ${padL},${padT+ih} L ` +
+    horsArr.map((v, i) => `${xOf(i)},${yOf(v)}`).join(" L ") +
+    ` L ${padL+iw},${padT+ih} Z`;
+  const lineTotal = totals.map((v, i) => `${xOf(i)},${yOf(v)}`).join(" ");
+  const lineHors = horsArr.map((v, i) => `${xOf(i)},${yOf(v)}`).join(" ");
+
+  let dots = "";
+  totals.forEach((v, i) => {
+    if (v > 0) dots += `<circle cx="${xOf(i).toFixed(1)}" cy="${yOf(v).toFixed(1)}" r="2" fill="${COLOR_BRAND}"/>`;
+  });
+
+  const legY = H - 15;
+  const legend = `
+    <rect x="${padL}" y="${legY-7}" width="11" height="11" fill="${COLOR_BRAND}" opacity="0.25"/>
+    <text x="${padL+16}" y="${legY+2}" font-size="10" fill="#5f5e5a">CA total HT</text>
+    <rect x="${padL+115}" y="${legY-7}" width="11" height="11" fill="${COLOR_BRAND}" opacity="0.55"/>
+    <text x="${padL+131}" y="${legY+2}" font-size="10" fill="#5f5e5a">CA hors gants et casiers</text>`;
+
+  return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:${H}px">
+    ${grid}${xl}
+    <path d="${areaTotal}" fill="${COLOR_BRAND}" opacity="0.25"/>
+    <path d="${areaHors}" fill="${COLOR_BRAND}" opacity="0.55"/>
+    <polyline points="${lineTotal}" fill="none" stroke="${COLOR_BRAND}" stroke-width="1.5" opacity="0.7"/>
+    <polyline points="${lineHors}" fill="none" stroke="${COLOR_BRAND}" stroke-width="1.5"/>
+    ${dots}
+    <text x="${W/2}" y="${H-40}" font-size="9" fill="#888780" text-anchor="middle">Jour du mois</text>
+    ${legend}
+  </svg>`;
+}
+
+// Trajectoire mensuelle (cumul saison par mois)
+function renderMonthlyTrajectory(months) {
+  const W = 600, H = 140;
+  const padL = 50, padR = 20, padT = 20, padB = 30;
+  const iw = W - padL - padR, ih = H - padT - padB;
+  const n = months.length;
+  if (n === 0) return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:${H}px"><text x="${W/2}" y="${H/2}" font-size="11" fill="#888780" text-anchor="middle">Pas encore de cumul saison</text></svg>`;
+
+  const vals = months.map(m => m.cum);
+  const maxV = Math.max(...vals, 1) * 1.10;
+  const xOf = (i) => padL + (n === 1 ? iw/2 : (i/(n-1)) * iw);
+  const yOf = (v) => padT + ih - (v / maxV) * ih;
+
+  let grid = "";
+  [0, maxV/3, 2*maxV/3, maxV].forEach((v, i) => {
+    const y = yOf(v);
+    const stroke = i === 0 ? "#d3d1c7" : "#e6e4dd";
+    grid += `<line x1="${padL}" y1="${y}" x2="${W-padR}" y2="${y}" stroke="${stroke}" stroke-width="0.5"/>`;
+    grid += `<text x="${padL-5}" y="${y+3}" font-size="9" fill="#888780" text-anchor="end">${fmtMoneyK(v)}</text>`;
+  });
+
+  let xl = "";
+  months.forEach((m, i) => {
+    xl += `<text x="${xOf(i)}" y="${H-10}" font-size="9" fill="#5f5e5a" text-anchor="middle">${m.label}</text>`;
+  });
+
+  const pts = months.map((m, i) => `${xOf(i)},${yOf(m.cum)}`).join(" ");
+  let dots = "";
+  months.forEach((m, i) => {
+    dots += `<circle cx="${xOf(i).toFixed(1)}" cy="${yOf(m.cum).toFixed(1)}" r="3.5" fill="${COLOR_BRAND}"/>`;
+    dots += `<text x="${xOf(i).toFixed(1)}" y="${(yOf(m.cum)-7).toFixed(1)}" font-size="9" fill="${COLOR_BRAND}" text-anchor="middle" font-weight="500">${fmtMoney(m.cum, 0)}</text>`;
+  });
+
+  const polyline = n > 1 ? `<polyline points="${pts}" fill="none" stroke="${COLOR_BRAND}" stroke-width="2"/>` : "";
+  const single = n === 1 ? `<text x="${W/2}" y="${padT+12}" font-size="10" fill="#888780" text-anchor="middle">Premier mois de la saison — la trajectoire s'enrichira avec les mois suivants</text>` : "";
+
+  return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:${H}px">${grid}${xl}${polyline}${dots}${single}</svg>`;
+}
 function renderHourHistogramStacked(byHourHors, byHourServ, colorHors, colorServ) {
   const W = 600, H = 200;
   const padL = 45, padR = 20, padT = 20, padB = 50;
@@ -1171,8 +1408,247 @@ function renderPage3(ctx) {
 }
 
 // ============================================
-// PAGE 4 — Histogrammes par heure (bonus)
+// MONTHLY HTML RENDERERS
 // ============================================
+function renderMonthlyHeader(ctx, pageNum) {
+  // Sous-titre selon mois en cours ou complet
+  let subtitle;
+  if (ctx.isCurrentMonth) {
+    subtitle = `⏳ Mois en cours · ${ctx.daysWithSales} jours d'ouverture sur ${ctx.daysCoveredIfCurrent} écoulés (mois de ${ctx.daysTotal} jours)`;
+  } else {
+    const periodTxt = formatPeriodFr(ctx.firstSale, ctx.lastSale);
+    subtitle = `${ctx.daysWithSales} jours d'ouverture sur ${ctx.daysTotal} · ${periodTxt}`;
+  }
+  return `
+    <div class="r-header">
+      <div class="r-header-left">
+        <div class="r-logo">${LOGO_SVG}</div>
+        <div>
+          <div class="r-overtitle">RAPPORT MENSUEL — BOUTIQUES O'FUN PARK</div>
+          <div class="r-title">${ctx.monthLabel}</div>
+          <div class="r-subtitle">${subtitle}</div>
+        </div>
+      </div>
+      <div class="r-header-right">
+        Page ${pageNum} / ${ctx.totalPages}<br>
+        Présentation Codir
+      </div>
+    </div>`;
+}
+
+function renderMonthlyFooter(ctx, pageNum) {
+  return `<div class="footer-page">
+    <span>O'Fun Park · Rapport mensuel boutiques · ${ctx.monthLabel}</span>
+    <span>Page ${pageNum} / ${ctx.totalPages}</span>
+  </div>`;
+}
+
+// Format français "du 7 au 30 avril 2026" ou "du 28 avril au 3 mai 2026"
+function formatPeriodFr(d1, d2) {
+  if (!d1 || !d2) return "";
+  if (d1.getMonth() === d2.getMonth() && d1.getFullYear() === d2.getFullYear()) {
+    return `du ${d1.getDate()} au ${d2.getDate()} ${MOIS_FR[d2.getMonth()]} ${d2.getFullYear()}`;
+  }
+  return `du ${d1.getDate()} ${MOIS_FR[d1.getMonth()]} au ${d2.getDate()} ${MOIS_FR[d2.getMonth()]} ${d2.getFullYear()}`;
+}
+
+// Page 1 mensuelle
+function renderMonthlyPage1(ctx) {
+  const g = ctx.global, traj = ctx.monthlyTrajectory;
+  const cumNHors = traj.reduce((s, m) => s + m.ca_hors, 0);
+
+  // Cards boutiques
+  let cards = "";
+  if (ctx.hasRush)    cards += renderBoutiqueKpi("Boutique Rush Canyon", COLOR_RUSH, ctx.rush);
+  if (ctx.hasFarwest) cards += renderBoutiqueKpi("Boutique Far West",    COLOR_FARWEST, ctx.farwest);
+  const cardsWrap = (ctx.hasRush && ctx.hasFarwest) ? `<div class="r-block-grid">${cards}</div>` : cards;
+
+  // Panier moyen visiteur (global, sur le mois)
+  let panier;
+  if (ctx.visiteurs && ctx.visiteurs > 0) {
+    const pmHors = g.ca_hors_service / ctx.visiteurs;
+    const pmTotal = g.ca_total / ctx.visiteurs;
+    panier = `
+      <div class="r-block" style="border-left:3px solid ${COLOR_BRAND};background:var(--bg-soft);">
+        <div style="display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:1.5rem;align-items:center;">
+          <div>
+            <div class="perf-label" style="margin-bottom:6px;">Panier moyen par entrée parc <span style="color:var(--text-tertiary);text-transform:none;letter-spacing:0;">(sur le mois)</span></div>
+            <div style="font-size:11px;color:var(--text-secondary);">
+              Sur <b>${ctx.visiteurs.toLocaleString("fr-FR")}</b> visiteur${ctx.visiteurs > 1 ? "s" : ""} sur le mois
+            </div>
+          </div>
+          <div>
+            <div class="kpi-label">Hors gants et casiers</div>
+            <div class="kpi-value" style="font-size:20px;">${fmtMoney(pmHors)}</div>
+          </div>
+          <div>
+            <div class="kpi-label">CA total</div>
+            <div class="kpi-value" style="font-size:20px;">${fmtMoney(pmTotal)}</div>
+          </div>
+        </div>
+      </div>`;
+  } else {
+    panier = `
+      <div class="r-block" style="border-left:3px solid var(--border);background:var(--bg-soft);">
+        <div class="perf-label" style="margin-bottom:4px;">Panier moyen par entrée parc (sur le mois)</div>
+        <div style="font-size:11px;color:var(--text-tertiary);">
+          Renseigner le nombre de visiteurs du mois dans le formulaire pour calculer le panier moyen.
+        </div>
+      </div>`;
+  }
+
+  // Si mois en cours, badge en haut
+  let currentBanner = "";
+  if (ctx.isCurrentMonth) {
+    currentBanner = `
+      <div class="r-block" style="background:var(--amber-bg);border-left:3px solid var(--brand-gold);padding:0.6rem 1rem;margin-bottom:0.75rem;">
+        <div style="font-size:12px;color:var(--text-primary);"><b>⏳ Mois en cours</b> — Les chiffres affichés ne portent que sur les ${ctx.daysCoveredIfCurrent} premiers jours du mois (sur ${ctx.daysTotal}).</div>
+      </div>`;
+  }
+
+  return `
+    <div class="page-content">
+      ${renderMonthlyHeader(ctx, 1)}
+      ${currentBanner}
+      <div class="r-section-label">1 — PERFORMANCE DU MOIS</div>
+      <div class="r-block">
+        <div class="perf-label">Chiffre d'affaires HT — hors gants et casiers</div>
+        <div class="big-number">${fmtMoney(g.ca_hors_service)}</div>
+      </div>
+
+      <div class="r-section-label">2 — CA TOTAL</div>
+      <div class="r-block">
+        <div class="perf-label">CA HT total (avec gants et casiers)</div>
+        <div class="big-number mid">${fmtMoney(g.ca_total)}</div>
+        <div class="perf-meta">Dont gants et casiers : ${fmtMoney(g.ca_service)} (${g.part_service.toFixed(1).replace(".", ",")} %)</div>
+        <div class="perf-meta" style="color:var(--text-tertiary)">Pas de comparaison N-1 disponible au niveau mensuel</div>
+      </div>
+
+      <div class="r-section-label">3 — CUMUL SAISON</div>
+      <div class="r-block">
+        <div style="display:grid;grid-template-columns:240px 1fr;gap:1.5rem;align-items:center;">
+          <div>
+            <div class="perf-label">Cumul saison HT (depuis ${traj[0].labelLong})</div>
+            <div class="big-number mid">${fmtMoney(traj[traj.length-1].cum)}</div>
+            <div class="perf-meta">Hors gants et casiers : <b>${fmtMoney(cumNHors)}</b></div>
+            <div class="perf-meta" style="color:var(--text-tertiary)">${traj.length} mois cumulé${traj.length > 1 ? "s" : ""}</div>
+          </div>
+          <div>${renderMonthlyTrajectory(traj)}</div>
+        </div>
+      </div>
+
+      <div class="r-section-label">4 — SYNTHÈSE PAR BOUTIQUE</div>
+      ${cardsWrap}
+      ${panier}
+    </div>
+    ${renderMonthlyFooter(ctx, 1)}`;
+}
+
+// Page 2 : Évolution interne au mois
+function renderMonthlyPage2(ctx) {
+  return `
+    <div class="page-content">
+      ${renderMonthlyHeader(ctx, 2)}
+      <div class="r-section-label">5 — ÉVOLUTION DU CA PAR SEMAINE (DANS LE MOIS)</div>
+      <p style="font-size:11px;color:var(--text-secondary);margin:0 0 0.5rem 0;">
+        Décomposition du CA HT mensuel par semaine ISO. Une semaine est marquée « partielle » lorsqu'elle déborde du mois calendaire ; seule la partie incluse dans le mois est comptabilisée.
+      </p>
+      <div class="r-block">${renderWeekBars(ctx.byWeek, ctx.year, ctx.month)}</div>
+
+      <div class="r-section-label">6 — ÉVOLUTION DU CA JOUR PAR JOUR</div>
+      <p style="font-size:11px;color:var(--text-secondary);margin:0 0 0.5rem 0;">
+        CA HT quotidien sur l'ensemble du mois. Les jours sans ventes (boutiques fermées) sont représentés par l'absence de point sur la courbe.
+      </p>
+      <div class="r-block">${renderDailyChart(ctx.byDay, ctx.monthKey)}</div>
+    </div>
+    ${renderMonthlyFooter(ctx, 2)}`;
+}
+
+// Page 3 quand 2 boutiques actives : top catégories
+function renderMonthlyPage3TwoBoutiques(ctx) {
+  let blocks = "";
+  blocks += `<div class="r-section-label">7 — TOP CATÉGORIES PAR BOUTIQUE</div>`;
+  blocks += renderCatBlock("● Boutique Rush Canyon", COLOR_RUSH, ctx.rush.categories);
+  blocks += renderCatBlock("● Boutique Far West", COLOR_FARWEST, ctx.farwest.categories);
+  blocks += `<div class="r-section-label">8 — TOP CATÉGORIES GLOBAL (DEUX BOUTIQUES)</div>`;
+  blocks += renderCatBlock("● Global · Rush Canyon + Far West", COLOR_BRAND, ctx.global.categories);
+  return `
+    <div class="page-content">
+      ${renderMonthlyHeader(ctx, 3)}
+      ${blocks}
+    </div>
+    ${renderMonthlyFooter(ctx, 3)}`;
+}
+
+// Page 4 quand 2 boutiques actives : top 10 produits
+function renderMonthlyPage4TwoBoutiques(ctx) {
+  const cols = [
+    ["Rush Canyon", COLOR_RUSH, ctx.rush],
+    ["Far West", COLOR_FARWEST, ctx.farwest],
+    ["Global", COLOR_BRAND, ctx.global],
+  ];
+  const gridCA = cols.map(([t, c, d]) => renderTop10Block(t, c, d.top10_ca, false)).join("");
+  const gridQte = cols.map(([t, c, d]) => renderTop10Block(t, c, d.top10_qte, true)).join("");
+  return `
+    <div class="page-content">
+      ${renderMonthlyHeader(ctx, 4)}
+      <div class="r-section-label">9 — TOP 10 PRODUITS PAR CA HT</div>
+      <div class="top10-grid" style="grid-template-columns: repeat(3, 1fr);">${gridCA}</div>
+      <div class="r-section-label">10 — TOP 10 PRODUITS PAR UNITÉS VENDUES</div>
+      <div class="top10-grid" style="grid-template-columns: repeat(3, 1fr);">${gridQte}</div>
+    </div>
+    ${renderMonthlyFooter(ctx, 4)}`;
+}
+
+// Page 3 condensée : 1 boutique unique → cat + top10 CA + top10 Unités sur la même page
+function renderMonthlyPage3OneBoutique(ctx) {
+  const b = ctx.hasRush ? ["Rush Canyon", COLOR_RUSH, ctx.rush] : ["Far West", COLOR_FARWEST, ctx.farwest];
+  const [label, color, d] = b;
+  return `
+    <div class="page-content">
+      ${renderMonthlyHeader(ctx, 3)}
+      <div class="r-section-label">7 — TOP CATÉGORIES</div>
+      ${renderCatBlock(`● Boutique ${label}`, color, d.categories)}
+
+      <div class="r-section-label">8 — TOP 10 PRODUITS (PAR CA HT ET PAR UNITÉS VENDUES)</div>
+      <div class="top10-grid" style="grid-template-columns: 1fr 1fr;">
+        ${renderTop10Block(`${label} — par CA HT`, color, d.top10_ca, false)}
+        ${renderTop10Block(`${label} — par unités`, color, d.top10_qte, true)}
+      </div>
+    </div>
+    ${renderMonthlyFooter(ctx, 3)}`;
+}
+
+// Page heures de vente (dernière page) — numérotation auto selon nb boutiques
+function renderMonthlyPageHeures(ctx) {
+  let blocks = "";
+  if (ctx.hasRush) {
+    blocks += `
+      <div class="r-block boutique-card" style="border-top:3px solid ${COLOR_RUSH};">
+        <div class="boutique-title" style="color:${COLOR_RUSH};">● Boutique Rush Canyon</div>
+        ${renderHourHistogramStacked(ctx.rush.by_hour_hors_service, ctx.rush.by_hour_service, COLOR_RUSH, COLOR_SERV)}
+      </div>`;
+  }
+  if (ctx.hasFarwest) {
+    blocks += `
+      <div class="r-block boutique-card" style="border-top:3px solid ${COLOR_FARWEST};">
+        <div class="boutique-title" style="color:${COLOR_FARWEST};">● Boutique Far West</div>
+        ${renderHourHistogramStacked(ctx.farwest.by_hour_hors_service, ctx.farwest.by_hour_service, COLOR_FARWEST, COLOR_SERV)}
+      </div>`;
+  }
+  const sectionNum = ctx.nbBoutiques > 1 ? 11 : 9;
+  return `
+    <div class="page-content">
+      ${renderMonthlyHeader(ctx, ctx.totalPages)}
+      <div class="r-section-label">${sectionNum} — CA PAR HEURE DE VENTE (HT) — CUMULÉ SUR LE MOIS</div>
+      <p style="font-size:11px;color:var(--text-secondary);margin:0 0 1rem 0;">
+        Répartition du CA HT cumulé sur l'ensemble du mois par tranche horaire. Le CA des gants/casiers
+        est empilé au-dessus pour identifier les heures de vente "boutique pure".
+      </p>
+      ${blocks}
+    </div>
+    ${renderMonthlyFooter(ctx, ctx.totalPages)}`;
+}
 function renderPage4(ctx) {
   const { week, rush, farwest, totalPages, hasRush, hasFarwest } = ctx;
   let blocks = "";
@@ -1256,13 +1732,158 @@ function buildContext(allWeeksRows, selectedWeek) {
 // UI : drop zone, file input, week selector, print, reset
 // ============================================
 let currentAllWeeksRows = null;
-const visiteursParSemaine = {}; // { "S21": 8423, ... } — mémorise la saisie par semaine
+let currentMode = null; // "weekly" | "monthly" | null
+const visiteursParSemaine = {}; // { "S21": 8423, ... }
+// ============================================
+// COMPUTE MENSUEL
+// ============================================
+// Liste des mois représentés dans le fichier (clés "YYYY-MM" triées)
+function getAllMonthsFromRows(allWeeksRows) {
+  const months = new Set();
+  for (const w in allWeeksRows) {
+    for (const r of allWeeksRows[w]) {
+      months.add(monthKeyOf(r.date));
+    }
+  }
+  return [...months].sort();
+}
+
+// Filtre les lignes par mois calendaire
+function filterRowsByMonth(allWeeksRows, monthKey) {
+  const rows = [];
+  const weeksUsed = new Set();
+  for (const w in allWeeksRows) {
+    for (const r of allWeeksRows[w]) {
+      if (monthKeyOf(r.date) === monthKey) {
+        rows.push(r);
+        weeksUsed.add(w);
+      }
+    }
+  }
+  return { rows, weeksUsed: [...weeksUsed].sort((a, b) => semNum(a) - semNum(b)) };
+}
+
+// Agrégation par semaine (Sxx → { ca_total, ca_service, ca_hors })
+// La semaine d'une ligne est calculée depuis le nom d'onglet de la ligne (préservé via _sheet)
+function computeByWeek(rows) {
+  const byWeek = {};
+  for (const r of rows) {
+    const w = r._sheet;
+    if (!w) continue;
+    if (!byWeek[w]) byWeek[w] = { ca_total: 0, ca_service: 0, ca_hors: 0 };
+    byWeek[w].ca_total += r.ca_ht;
+    if (r.isService) byWeek[w].ca_service += r.ca_ht;
+    else byWeek[w].ca_hors += r.ca_ht;
+  }
+  Object.values(byWeek).forEach(v => {
+    v.ca_total = +v.ca_total.toFixed(2);
+    v.ca_service = +v.ca_service.toFixed(2);
+    v.ca_hors = +v.ca_hors.toFixed(2);
+  });
+  return byWeek;
+}
+
+// Agrégation par jour ("YYYY-MM-DD" → { ca_total, ca_service, ca_hors })
+function computeByDay(rows) {
+  const byDay = {};
+  for (const r of rows) {
+    const k = dayKeyOf(r.date);
+    if (!byDay[k]) byDay[k] = { ca_total: 0, ca_service: 0, ca_hors: 0 };
+    byDay[k].ca_total += r.ca_ht;
+    if (r.isService) byDay[k].ca_service += r.ca_ht;
+    else byDay[k].ca_hors += r.ca_ht;
+  }
+  Object.values(byDay).forEach(v => {
+    v.ca_total = +v.ca_total.toFixed(2);
+    v.ca_service = +v.ca_service.toFixed(2);
+    v.ca_hors = +v.ca_hors.toFixed(2);
+  });
+  return byDay;
+}
+
+// Trajectoire mensuelle (cumul saison par mois)
+function computeMonthlyTrajectory(allWeeksRows, currentMonthKey) {
+  const allMonths = getAllMonthsFromRows(allWeeksRows);
+  const upTo = allMonths.filter(m => m <= currentMonthKey);
+  let cum = 0;
+  const trajectory = [];
+  for (const mk of upTo) {
+    const { rows } = filterRowsByMonth(allWeeksRows, mk);
+    const ca = rows.reduce((s, r) => s + r.ca_ht, 0);
+    const caHors = rows.filter(r => !r.isService).reduce((s, r) => s + r.ca_ht, 0);
+    cum += ca;
+    trajectory.push({
+      key: mk,
+      label: monthLabelShort(mk),
+      labelLong: monthLabel(mk),
+      ca: +ca.toFixed(2),
+      ca_hors: +caHors.toFixed(2),
+      cum: +cum.toFixed(2),
+    });
+  }
+  return trajectory;
+}
+
+const visiteursParMois = {}; // { "2026-04": 25000, ... }
+
+function buildMonthlyContext(allWeeksRows, monthKey) {
+  const { rows, weeksUsed } = filterRowsByMonth(allWeeksRows, monthKey);
+  if (!rows.length) return null;
+
+  // Boutiques actives
+  const boutiquesActives = new Set();
+  rows.forEach(r => { if (r.boutique) boutiquesActives.add(r.boutique); });
+  const hasRush = boutiquesActives.has("Boutique Rush Canyon");
+  const hasFarwest = boutiquesActives.has("Boutique Far West");
+  const nbBoutiques = (hasRush ? 1 : 0) + (hasFarwest ? 1 : 0);
+  const totalPages = nbBoutiques > 1 ? 5 : 4;
+
+  // KPIs
+  const rush = dataFor(rows.filter(r => r.boutique === "Boutique Rush Canyon"));
+  const farwest = dataFor(rows.filter(r => r.boutique === "Boutique Far West"));
+  const globalD = dataFor(rows);
+
+  const byWeek = computeByWeek(rows);
+  const byDay = computeByDay(rows);
+  const monthlyTrajectory = computeMonthlyTrajectory(allWeeksRows, monthKey);
+
+  // Métadonnées de période
+  const [year, month] = monthKey.split("-").map(Number);
+  const dates = rows.map(r => r.date.getTime());
+  const firstSale = new Date(Math.min(...dates));
+  const lastSale  = new Date(Math.max(...dates));
+  const daysTotal = daysInMonth(year, month);
+  const uniqueDays = new Set(rows.map(r => dayKeyOf(r.date)));
+  const daysWithSales = uniqueDays.size;
+
+  // Mois en cours ?
+  const today = new Date();
+  const isCurrentMonth = monthKey === monthKeyOf(today);
+  const todayDay = today.getDate();
+  // Si mois en cours et qu'on n'a pas encore atteint la fin du mois calendaire
+  const daysCoveredIfCurrent = isCurrentMonth ? todayDay : daysTotal;
+
+  return {
+    monthKey, monthLabel: monthLabel(monthKey),
+    year, month,
+    daysTotal, daysWithSales, isCurrentMonth, daysCoveredIfCurrent,
+    firstSale, lastSale,
+    rush, farwest, global: globalD,
+    byWeek, byDay,
+    monthlyTrajectory,
+    hasRush, hasFarwest, nbBoutiques, totalPages,
+    visiteurs: visiteursParMois[monthKey] ?? null,
+    weeksUsed,
+  };
+}
 
 const dropZone   = document.getElementById("dropZone");
 const fileInput  = document.getElementById("fileInput");
 const fileName   = document.getElementById("fileName");
 const weekSelect = document.getElementById("weekSelect");
 const visiteursInput = document.getElementById("visiteursInput");
+const monthSelect = document.getElementById("monthSelect");
+const visiteursMonthInput = document.getElementById("visiteursMonthInput");
 const btnPrint   = document.getElementById("btnPrint");
 const btnReset   = document.getElementById("btnReset");
 const logZone    = document.getElementById("logZone");
@@ -1293,13 +1914,11 @@ fileInput.addEventListener("change", (e) => {
 
 weekSelect.addEventListener("change", () => {
   if (!weekSelect.value) return;
-  // Re-remplir le champ visiteurs avec la valeur mémorisée pour cette semaine (ou vide)
   const v = visiteursParSemaine[weekSelect.value];
   visiteursInput.value = (v !== undefined && v !== null) ? v : "";
   renderReport(weekSelect.value);
 });
 
-// Saisie nb visiteurs : on mémorise par semaine, et on re-render à la volée
 visiteursInput.addEventListener("input", () => {
   if (!weekSelect.value) return;
   const raw = visiteursInput.value.trim();
@@ -1307,31 +1926,50 @@ visiteursInput.addEventListener("input", () => {
     delete visiteursParSemaine[weekSelect.value];
   } else {
     const n = parseInt(raw, 10);
-    if (!Number.isNaN(n) && n >= 0) {
-      visiteursParSemaine[weekSelect.value] = n;
-    }
+    if (!Number.isNaN(n) && n >= 0) visiteursParSemaine[weekSelect.value] = n;
   }
-  renderReport(weekSelect.value);
+  if (currentMode === "weekly") renderReport(weekSelect.value);
+});
+
+// === MENSUEL ===
+monthSelect.addEventListener("change", () => {
+  if (!monthSelect.value) return;
+  const v = visiteursParMois[monthSelect.value];
+  visiteursMonthInput.value = (v !== undefined && v !== null) ? v : "";
+  renderMonthlyReport(monthSelect.value);
+});
+
+visiteursMonthInput.addEventListener("input", () => {
+  if (!monthSelect.value) return;
+  const raw = visiteursMonthInput.value.trim();
+  if (raw === "") {
+    delete visiteursParMois[monthSelect.value];
+  } else {
+    const n = parseInt(raw, 10);
+    if (!Number.isNaN(n) && n >= 0) visiteursParMois[monthSelect.value] = n;
+  }
+  if (currentMode === "monthly") renderMonthlyReport(monthSelect.value);
 });
 
 btnReset.addEventListener("click", () => {
   currentAllWeeksRows = null;
-  // Vider la mémoire des visiteurs
+  currentMode = null;
   for (const k of Object.keys(visiteursParSemaine)) delete visiteursParSemaine[k];
+  for (const k of Object.keys(visiteursParMois)) delete visiteursParMois[k];
   fileName.textContent = "";
   fileInput.value = "";
   weekSelect.innerHTML = `<option value="">— Charger un fichier d'abord —</option>`;
   weekSelect.disabled = true;
   visiteursInput.value = "";
   visiteursInput.disabled = true;
+  monthSelect.innerHTML = `<option value="">— Charger un fichier d'abord —</option>`;
+  monthSelect.disabled = true;
+  visiteursMonthInput.value = "";
+  visiteursMonthInput.disabled = true;
   btnPrint.disabled = true;
   btnReset.disabled = true;
   reportContainer.classList.remove("ready");
-  reportContainer.innerHTML = `
-    <div class="page-sheet" id="page1"></div>
-    <div class="page-sheet" id="page2"></div>
-    <div class="page-sheet" id="page3"></div>
-    <div class="page-sheet" id="page4"></div>`;
+  reportContainer.innerHTML = "";
   clearLog();
 });
 
@@ -1357,7 +1995,7 @@ function handleFile(file) {
       }
       currentAllWeeksRows = allWeeksRows;
 
-      // Remplir le sélecteur (tri croissant)
+      // Remplir le sélecteur de semaines (tri croissant)
       const sorted = [...weekSheets].sort((a, b) => semNum(a) - semNum(b));
       weekSelect.innerHTML = sorted.map(w => {
         const rows = allWeeksRows[w];
@@ -1365,20 +2003,26 @@ function handleFile(file) {
         return `<option value="${w}"${hasData ? "" : " disabled"}>${w}${hasData ? "" : " (vide)"}</option>`;
       }).join("");
 
-      // Par défaut : dernière semaine avec données
+      // Remplir le sélecteur de mois (tri croissant)
+      const allMonths = getAllMonthsFromRows(allWeeksRows);
+      monthSelect.innerHTML = '<option value="">— Sélectionner un mois —</option>' +
+        allMonths.map(mk => `<option value="${mk}">${monthLabel(mk)}</option>`).join("");
+
+      // Par défaut : pour l'hebdo, dernière semaine avec données ; pour le mensuel : NE PAS auto-sélectionner
       const defaultWeek = [...sorted].reverse().find(w => allWeeksRows[w].length > 0);
       if (defaultWeek) weekSelect.value = defaultWeek;
 
       weekSelect.disabled = false;
       visiteursInput.disabled = false;
+      monthSelect.disabled = false;
+      visiteursMonthInput.disabled = false;
       btnPrint.disabled = false;
       btnReset.disabled = false;
 
-      // Pré-remplir le champ visiteurs si la semaine par défaut a une valeur mémorisée
       const v = visiteursParSemaine[weekSelect.value];
       visiteursInput.value = (v !== undefined && v !== null) ? v : "";
 
-      log(`Fichier chargé. ${sorted.length} semaine(s) détectée(s) : ${sorted.join(", ")}.`, "success");
+      log(`Fichier chargé. ${sorted.length} semaine(s) : ${sorted.join(", ")}. ${allMonths.length} mois disponibles : ${allMonths.map(monthLabel).join(", ")}.`, "success");
       renderReport(weekSelect.value);
     } catch (err) {
       console.error(err);
@@ -1396,11 +2040,42 @@ function renderReport(weekName) {
     log(`Aucune donnée pour la semaine ${weekName}.`, "error");
     return;
   }
+  // Reconstruit le container pour 4 pages
+  reportContainer.innerHTML = `
+    <div class="page-sheet" id="page1"></div>
+    <div class="page-sheet" id="page2"></div>
+    <div class="page-sheet" id="page3"></div>
+    <div class="page-sheet" id="page4"></div>`;
   document.getElementById("page1").innerHTML = renderPage1(ctx);
   document.getElementById("page2").innerHTML = renderPage2(ctx);
   document.getElementById("page3").innerHTML = renderPage3(ctx);
   document.getElementById("page4").innerHTML = renderPage4(ctx);
   reportContainer.classList.add("ready");
+  currentMode = "weekly";
+}
+
+function renderMonthlyReport(monthKey) {
+  if (!currentAllWeeksRows) return;
+  const ctx = buildMonthlyContext(currentAllWeeksRows, monthKey);
+  if (!ctx) {
+    log(`Aucune donnée pour le mois ${monthLabel(monthKey)}.`, "error");
+    return;
+  }
+  // Reconstruit le container (4 ou 5 pages selon nb boutiques)
+  const pages = [];
+  pages.push(renderMonthlyPage1(ctx));
+  pages.push(renderMonthlyPage2(ctx));
+  if (ctx.nbBoutiques > 1) {
+    pages.push(renderMonthlyPage3TwoBoutiques(ctx));
+    pages.push(renderMonthlyPage4TwoBoutiques(ctx));
+  } else {
+    pages.push(renderMonthlyPage3OneBoutique(ctx));
+  }
+  pages.push(renderMonthlyPageHeures(ctx));
+
+  reportContainer.innerHTML = pages.map(p => `<div class="page-sheet">${p}</div>`).join("");
+  reportContainer.classList.add("ready");
+  currentMode = "monthly";
 }
 
 </script>
