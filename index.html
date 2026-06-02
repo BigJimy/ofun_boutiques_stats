@@ -382,6 +382,9 @@ button.secondary:hover { background: var(--bg-soft); }
     <select id="weekSelect" disabled>
       <option value="">— Charger un fichier d'abord —</option>
     </select>
+    <label for="visiteursInput" style="margin-left:0.5rem;">Visiteurs :</label>
+    <input type="number" id="visiteursInput" min="0" step="1" placeholder="Nb entrées parc" disabled
+           style="padding:8px 12px;border-radius:6px;border:0.5px solid var(--border);background:white;font-size:13px;font-family:inherit;width:140px;">
     <button class="primary" id="btnPrint" disabled>Imprimer / Exporter PDF</button>
     <button class="secondary" id="btnReset" disabled>Recommencer</button>
   </div>
@@ -435,10 +438,6 @@ const CAT_PALETTE = [
 // Si une semaine est à 0, le rapport affichera "Boutiques fermées en N-1".
 // ============================================
 const N1_HEBDO = {
-  "S15":  101.71,
-  "S16":  227.30,
-  "S17":  138.27,
-  "S18": 153.93,
   "S19":  581.53,
   "S20":  226.64,
   "S21":    0.00,
@@ -928,7 +927,7 @@ function renderBoutiqueKpi(label, color, d) {
 // PAGE 1 — Vue d'ensemble
 // ============================================
 function renderPage1(ctx) {
-  const { week, global, rush, farwest, traj, totalPages, hasRush, hasFarwest } = ctx;
+  const { week, global, rush, farwest, traj, totalPages, hasRush, hasFarwest, visiteurs } = ctx;
   const n1 = N1_HEBDO[week.name];
   const hasN1 = n1 !== undefined && n1 !== null;
   const evolTotal = hasN1 ? pctEvol(global.ca_total, n1) : null;
@@ -948,11 +947,43 @@ function renderPage1(ctx) {
   let boutiqueCards = "";
   if (hasRush)    boutiqueCards += renderBoutiqueKpi("Boutique Rush Canyon", COLOR_RUSH, rush);
   if (hasFarwest) boutiqueCards += renderBoutiqueKpi("Boutique Far West",    COLOR_FARWEST, farwest);
-
-  // Si une seule boutique active, on n'utilise pas la grille 2 colonnes
   const cardsWrapper = (hasRush && hasFarwest)
     ? `<div class="r-block-grid">${boutiqueCards}</div>`
     : boutiqueCards;
+
+  // Carte Panier moyen visiteur (global, 2 boutiques cumulées)
+  let panierMoyenBlock = "";
+  if (visiteurs && visiteurs > 0) {
+    const pmHors = global.ca_hors_service / visiteurs;
+    const pmTotal = global.ca_total / visiteurs;
+    panierMoyenBlock = `
+      <div class="r-block" style="border-left:3px solid ${COLOR_BRAND};background:var(--bg-soft);">
+        <div style="display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:1.5rem;align-items:center;">
+          <div>
+            <div class="perf-label" style="margin-bottom:6px;">Panier moyen par entrée parc <span style="color:var(--text-tertiary);text-transform:none;letter-spacing:0;">(global, 2 boutiques cumulées)</span></div>
+            <div style="font-size:11px;color:var(--text-secondary);">
+              Sur <b>${visiteurs.toLocaleString("fr-FR")}</b> visiteur${visiteurs > 1 ? "s" : ""} cette semaine
+            </div>
+          </div>
+          <div>
+            <div class="kpi-label">Hors gants et casiers</div>
+            <div class="kpi-value" style="font-size:20px;">${fmtMoney(pmHors)}</div>
+          </div>
+          <div>
+            <div class="kpi-label">CA total</div>
+            <div class="kpi-value" style="font-size:20px;">${fmtMoney(pmTotal)}</div>
+          </div>
+        </div>
+      </div>`;
+  } else {
+    panierMoyenBlock = `
+      <div class="r-block" style="border-left:3px solid var(--border);background:var(--bg-soft);">
+        <div class="perf-label" style="margin-bottom:4px;">Panier moyen par entrée parc</div>
+        <div style="font-size:11px;color:var(--text-tertiary);">
+          Renseigner le nombre de visiteurs dans le formulaire pour calculer le panier moyen.
+        </div>
+      </div>`;
+  }
 
   return `
     <div class="page-content">
@@ -1008,6 +1039,7 @@ function renderPage1(ctx) {
 
       <div class="r-section-label">4 — SYNTHÈSE PAR BOUTIQUE</div>
       ${cardsWrapper}
+      ${panierMoyenBlock}
     </div>
     ${renderFooter(week, 1, totalPages)}`;
 }
@@ -1207,6 +1239,7 @@ function buildContext(allWeeksRows, selectedWeek) {
     global, rush, farwest,
     traj,
     hasRush, hasFarwest,
+    visiteurs: visiteursParSemaine[selectedWeek] ?? null,
     totalPages: 4,
   };
 }
@@ -1215,11 +1248,13 @@ function buildContext(allWeeksRows, selectedWeek) {
 // UI : drop zone, file input, week selector, print, reset
 // ============================================
 let currentAllWeeksRows = null;
+const visiteursParSemaine = {}; // { "S21": 8423, ... } — mémorise la saisie par semaine
 
 const dropZone   = document.getElementById("dropZone");
 const fileInput  = document.getElementById("fileInput");
 const fileName   = document.getElementById("fileName");
 const weekSelect = document.getElementById("weekSelect");
+const visiteursInput = document.getElementById("visiteursInput");
 const btnPrint   = document.getElementById("btnPrint");
 const btnReset   = document.getElementById("btnReset");
 const logZone    = document.getElementById("logZone");
@@ -1250,15 +1285,37 @@ fileInput.addEventListener("change", (e) => {
 
 weekSelect.addEventListener("change", () => {
   if (!weekSelect.value) return;
+  // Re-remplir le champ visiteurs avec la valeur mémorisée pour cette semaine (ou vide)
+  const v = visiteursParSemaine[weekSelect.value];
+  visiteursInput.value = (v !== undefined && v !== null) ? v : "";
+  renderReport(weekSelect.value);
+});
+
+// Saisie nb visiteurs : on mémorise par semaine, et on re-render à la volée
+visiteursInput.addEventListener("input", () => {
+  if (!weekSelect.value) return;
+  const raw = visiteursInput.value.trim();
+  if (raw === "") {
+    delete visiteursParSemaine[weekSelect.value];
+  } else {
+    const n = parseInt(raw, 10);
+    if (!Number.isNaN(n) && n >= 0) {
+      visiteursParSemaine[weekSelect.value] = n;
+    }
+  }
   renderReport(weekSelect.value);
 });
 
 btnReset.addEventListener("click", () => {
   currentAllWeeksRows = null;
+  // Vider la mémoire des visiteurs
+  for (const k of Object.keys(visiteursParSemaine)) delete visiteursParSemaine[k];
   fileName.textContent = "";
   fileInput.value = "";
   weekSelect.innerHTML = `<option value="">— Charger un fichier d'abord —</option>`;
   weekSelect.disabled = true;
+  visiteursInput.value = "";
+  visiteursInput.disabled = true;
   btnPrint.disabled = true;
   btnReset.disabled = true;
   reportContainer.classList.remove("ready");
@@ -1305,8 +1362,13 @@ function handleFile(file) {
       if (defaultWeek) weekSelect.value = defaultWeek;
 
       weekSelect.disabled = false;
+      visiteursInput.disabled = false;
       btnPrint.disabled = false;
       btnReset.disabled = false;
+
+      // Pré-remplir le champ visiteurs si la semaine par défaut a une valeur mémorisée
+      const v = visiteursParSemaine[weekSelect.value];
+      visiteursInput.value = (v !== undefined && v !== null) ? v : "";
 
       log(`Fichier chargé. ${sorted.length} semaine(s) détectée(s) : ${sorted.join(", ")}.`, "success");
       renderReport(weekSelect.value);
