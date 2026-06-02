@@ -431,13 +431,21 @@ const CAT_PALETTE = [
 
 // ============================================
 // ⚠️  DONNÉES N-1 — codées en dur, à mettre à jour ici si besoin
-// (extraites du fichier "Recap_CA_HT_par_semaine.xlsx")
+//
+// Sources :
+//   - S15 à S18 : extraites du fichier "BOUTIQUE_AVRIL_2025.xlsx"
+//                 (somme des lignes CA HT + REGUL net, en Crédit - Débit)
+//   - S19 à S40 : extraites du fichier "Recap_CA_HT_par_semaine.xlsx"
 //
 // Le rapport affiche l'évolution N vs N-1 sur le CA HT total de la semaine.
 // Si une semaine n'est pas listée ici, l'évolution affichera "—".
 // Si une semaine est à 0, le rapport affichera "Boutiques fermées en N-1".
 // ============================================
 const N1_HEBDO = {
+  "S15":  101.71,
+  "S16":  277.30,
+  "S17":  138.27,
+  "S18":  153.93,
   "S19":  581.53,
   "S20":  226.64,
   "S21":    0.00,
