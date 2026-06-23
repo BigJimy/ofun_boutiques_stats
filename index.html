@@ -641,6 +641,15 @@ function parseSheetRows(workbook, sheetName) {
     else dt = new Date(r[0]);
     if (Number.isNaN(dt.getTime())) continue;
 
+    // ── Filtre périmètre O'Fun ──────────────────────────────────────────
+    // Ce générateur ne concerne QUE les boutiques O'Fun (Rush Canyon + Far West).
+    // Les ventes de la boutique O'Gliss (parc aquatique) sont gérées par un
+    // générateur dédié : on les écarte ici dès le parsing, pour que tous les
+    // calculs en aval (KPI, N-1, paniers, catégories) restent sur le seul O'Fun.
+    const boutique = normalizeBoutique(r[5]);
+    if (boutique === "Boutique O'Gliss") continue;
+    // ────────────────────────────────────────────────────────────────────
+
     // Catégorie : si vide, déduire ("Chapeau" → "Western")
     let cat = r[2];
     if ((cat === null || cat === undefined || cat === "") && typeof r[1] === "string" && r[1].includes("Chapeau")) {
@@ -659,7 +668,7 @@ function parseSheetRows(workbook, sheetName) {
       isService: cat === SERVICE_CAT,
       quantite: qte,
       pdv: r[5],
-      boutique: normalizeBoutique(r[5]),
+      boutique: boutique,
       ca_ht: Number.isFinite(prixTotal) ? prixTotal / TVA : 0,
       _sheet: sheetName,   // ← utilisé pour agrégation par semaine
     });
