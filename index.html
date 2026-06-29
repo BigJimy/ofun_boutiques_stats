@@ -408,8 +408,11 @@ button.secondary:hover { background: var(--bg-soft); }
       <select id="weekSelect" disabled>
         <option value="">— Charger un fichier d'abord —</option>
       </select>
-      <label for="visiteursInput" style="margin-left:0.5rem;">Visiteurs :</label>
+      <label for="visiteursInput" style="margin-left:0.5rem;">Visiteurs N :</label>
       <input type="number" id="visiteursInput" min="0" step="1" placeholder="Nb entrées parc" disabled
+             style="padding:8px 12px;border-radius:6px;border:0.5px solid var(--border);background:white;font-size:13px;font-family:inherit;width:140px;">
+      <label for="visiteursN1Input" style="margin-left:0.5rem;">Visiteurs N-1 :</label>
+      <input type="number" id="visiteursN1Input" min="0" step="1" placeholder="Nb entrées N-1" disabled
              style="padding:8px 12px;border-radius:6px;border:0.5px solid var(--border);background:white;font-size:13px;font-family:inherit;width:140px;">
     </div>
   </div>
@@ -422,8 +425,11 @@ button.secondary:hover { background: var(--bg-soft); }
       <select id="monthSelect" disabled>
         <option value="">— Charger un fichier d'abord —</option>
       </select>
-      <label for="visiteursMonthInput" style="margin-left:0.5rem;">Visiteurs :</label>
+      <label for="visiteursMonthInput" style="margin-left:0.5rem;">Visiteurs N :</label>
       <input type="number" id="visiteursMonthInput" min="0" step="1" placeholder="Nb entrées parc" disabled
+             style="padding:8px 12px;border-radius:6px;border:0.5px solid var(--border);background:white;font-size:13px;font-family:inherit;width:140px;">
+      <label for="visiteursN1MonthInput" style="margin-left:0.5rem;">Visiteurs N-1 :</label>
+      <input type="number" id="visiteursN1MonthInput" min="0" step="1" placeholder="Nb entrées N-1" disabled
              style="padding:8px 12px;border-radius:6px;border:0.5px solid var(--border);background:white;font-size:13px;font-family:inherit;width:140px;">
     </div>
   </div>
@@ -509,6 +515,16 @@ const N1_HEBDO = {
   "S40":   31.66,
 };
 
+// Mensuel : somme proratisée des semaines N1_HEBDO par mois calendaire 2025
+// (les semaines à cheval sont réparties au prorata du nb de jours dans chaque mois)
+const N1_MENSUEL = {
+  "2026-04":  583.25,  // Avril 2025    : S15+S16+S17 + S18×3/7
+  "2026-05": 1207.53,  // Mai 2025      : S18×4/7 + S19+S20+S21 + S22×6/7
+  "2026-06": 1464.30,  // Juin 2025     : S22×1/7 + S23+S24+S25+S26 + S27×1/7
+  "2026-07": 2416.38,  // Juillet 2025  : S27×6/7 + S28+S29+S30 + S31×4/7
+  "2026-08": 6886.99,  // Août 2025     : S31×3/7 + S32+S33+S34+S35
+  "2026-09":  549.76,  // Septembre 2025: S36+S37+S38+S39 + S40×2/7
+};
 
 // ============================================
 // HELPERS — formatage et calculs
@@ -641,15 +657,6 @@ function parseSheetRows(workbook, sheetName) {
     else dt = new Date(r[0]);
     if (Number.isNaN(dt.getTime())) continue;
 
-    // ── Filtre périmètre O'Fun ──────────────────────────────────────────
-    // Ce générateur ne concerne QUE les boutiques O'Fun (Rush Canyon + Far West).
-    // Les ventes de la boutique O'Gliss (parc aquatique) sont gérées par un
-    // générateur dédié : on les écarte ici dès le parsing, pour que tous les
-    // calculs en aval (KPI, N-1, paniers, catégories) restent sur le seul O'Fun.
-    const boutique = normalizeBoutique(r[5]);
-    if (boutique === "Boutique O'Gliss") continue;
-    // ────────────────────────────────────────────────────────────────────
-
     // Catégorie : si vide, déduire ("Chapeau" → "Western")
     let cat = r[2];
     if ((cat === null || cat === undefined || cat === "") && typeof r[1] === "string" && r[1].includes("Chapeau")) {
@@ -668,7 +675,7 @@ function parseSheetRows(workbook, sheetName) {
       isService: cat === SERVICE_CAT,
       quantite: qte,
       pdv: r[5],
-      boutique: boutique,
+      boutique: normalizeBoutique(r[5]),
       ca_ht: Number.isFinite(prixTotal) ? prixTotal / TVA : 0,
       _sheet: sheetName,   // ← utilisé pour agrégation par semaine
     });
@@ -1181,7 +1188,7 @@ function renderBoutiqueKpi(label, color, d) {
 // PAGE 1 — Vue d'ensemble
 // ============================================
 function renderPage1(ctx) {
-  const { week, global, rush, farwest, traj, totalPages, hasRush, hasFarwest, visiteurs } = ctx;
+  const { week, global, rush, farwest, traj, totalPages, hasRush, hasFarwest, visiteurs, visiteursN1 } = ctx;
   const n1 = N1_HEBDO[week.name];
   const hasN1 = n1 !== undefined && n1 !== null;
   const evolTotal = hasN1 ? pctEvol(global.ca_total, n1) : null;
@@ -1210,14 +1217,17 @@ function renderPage1(ctx) {
   if (visiteurs && visiteurs > 0) {
     const pmHors = global.ca_hors_service / visiteurs;
     const pmTotal = global.ca_total / visiteurs;
+    const pm_n1 = (visiteursN1 && visiteursN1 > 0 && hasN1 && n1 > 0) ? n1 / visiteursN1 : null;
+    const evolPanier = pm_n1 ? pctEvol(pmTotal, pm_n1) : null;
     panierMoyenBlock = `
       <div class="r-block" style="border-left:3px solid ${COLOR_BRAND};background:var(--bg-soft);">
         <div style="display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:1.5rem;align-items:center;">
           <div>
             <div class="perf-label" style="margin-bottom:6px;">Panier moyen par entrée parc <span style="color:var(--text-tertiary);text-transform:none;letter-spacing:0;">(global, 2 boutiques cumulées)</span></div>
             <div style="font-size:11px;color:var(--text-secondary);">
-              Sur <b>${visiteurs.toLocaleString("fr-FR")}</b> visiteur${visiteurs > 1 ? "s" : ""} cette semaine
+              N : <b>${visiteurs.toLocaleString("fr-FR")}</b> visiteur${visiteurs > 1 ? "s" : ""} cette semaine
             </div>
+            ${visiteursN1 && visiteursN1 > 0 ? `<div style="font-size:11px;color:var(--text-tertiary);">N-1 : <b>${visiteursN1.toLocaleString("fr-FR")}</b> visiteur${visiteursN1 > 1 ? "s" : ""}</div>` : ""}
           </div>
           <div>
             <div class="kpi-label">Hors gants et casiers</div>
@@ -1226,6 +1236,7 @@ function renderPage1(ctx) {
           <div>
             <div class="kpi-label">CA total</div>
             <div class="kpi-value" style="font-size:20px;">${fmtMoney(pmTotal)}</div>
+            ${pm_n1 ? `<div class="perf-meta">N-1 : ${fmtMoney(pm_n1)} ${badgeFor(evolPanier)}</div>` : ""}
           </div>
         </div>
       </div>`;
@@ -1465,6 +1476,10 @@ function formatPeriodFr(d1, d2) {
 function renderMonthlyPage1(ctx) {
   const g = ctx.global, traj = ctx.monthlyTrajectory;
   const cumNHors = traj.reduce((s, m) => s + m.ca_hors, 0);
+  const n1m = ctx.n1_monthly;
+  const hasN1m = n1m !== null && n1m !== undefined;
+  const evolN1m = hasN1m ? pctEvol(g.ca_total, n1m) : null;
+  const ecartN1m = hasN1m ? g.ca_total - n1m : null;
 
   // Cards boutiques
   let cards = "";
@@ -1477,14 +1492,17 @@ function renderMonthlyPage1(ctx) {
   if (ctx.visiteurs && ctx.visiteurs > 0) {
     const pmHors = g.ca_hors_service / ctx.visiteurs;
     const pmTotal = g.ca_total / ctx.visiteurs;
+    const pm_n1m = (ctx.visiteursN1 && ctx.visiteursN1 > 0 && hasN1m && n1m > 0) ? n1m / ctx.visiteursN1 : null;
+    const evolPanierM = pm_n1m ? pctEvol(pmTotal, pm_n1m) : null;
     panier = `
       <div class="r-block" style="border-left:3px solid ${COLOR_BRAND};background:var(--bg-soft);">
         <div style="display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:1.5rem;align-items:center;">
           <div>
             <div class="perf-label" style="margin-bottom:6px;">Panier moyen par entrée parc <span style="color:var(--text-tertiary);text-transform:none;letter-spacing:0;">(sur le mois)</span></div>
             <div style="font-size:11px;color:var(--text-secondary);">
-              Sur <b>${ctx.visiteurs.toLocaleString("fr-FR")}</b> visiteur${ctx.visiteurs > 1 ? "s" : ""} sur le mois
+              N : <b>${ctx.visiteurs.toLocaleString("fr-FR")}</b> visiteur${ctx.visiteurs > 1 ? "s" : ""} sur le mois
             </div>
+            ${ctx.visiteursN1 && ctx.visiteursN1 > 0 ? `<div style="font-size:11px;color:var(--text-tertiary);">N-1 : <b>${ctx.visiteursN1.toLocaleString("fr-FR")}</b> visiteur${ctx.visiteursN1 > 1 ? "s" : ""}</div>` : ""}
           </div>
           <div>
             <div class="kpi-label">Hors gants et casiers</div>
@@ -1493,6 +1511,7 @@ function renderMonthlyPage1(ctx) {
           <div>
             <div class="kpi-label">CA total</div>
             <div class="kpi-value" style="font-size:20px;">${fmtMoney(pmTotal)}</div>
+            ${pm_n1m ? `<div class="perf-meta">N-1 : ${fmtMoney(pm_n1m)} ${badgeFor(evolPanierM)}</div>` : ""}
           </div>
         </div>
       </div>`;
@@ -1525,12 +1544,22 @@ function renderMonthlyPage1(ctx) {
         <div class="big-number">${fmtMoney(g.ca_hors_service)}</div>
       </div>
 
-      <div class="r-section-label">2 — CA TOTAL</div>
+      <div class="r-section-label">2 — CA TOTAL & COMPARAISON N-1</div>
       <div class="r-block">
-        <div class="perf-label">CA HT total (avec gants et casiers)</div>
-        <div class="big-number mid">${fmtMoney(g.ca_total)}</div>
-        <div class="perf-meta">Dont gants et casiers : ${fmtMoney(g.ca_service)} (${g.part_service.toFixed(1).replace(".", ",")} %)</div>
-        <div class="perf-meta" style="color:var(--text-tertiary)">Pas de comparaison N-1 disponible au niveau mensuel</div>
+        <div class="perf-row">
+          <div>
+            <div class="perf-label">CA HT total (avec gants et casiers)</div>
+            <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;">
+              <div class="big-number mid">${fmtMoney(g.ca_total)}</div>
+              ${badgeFor(evolN1m)}
+            </div>
+            <div class="perf-meta">Dont gants et casiers : ${fmtMoney(g.ca_service)} (${g.part_service.toFixed(1).replace(".", ",")} %)</div>
+            ${hasN1m ? `<div class="perf-meta">N-1 : ${fmtMoney(n1m)} · Écart : ${ecartN1m >= 0 ? "+" : ""}${fmtMoney(ecartN1m)}</div>` : `<div class="perf-meta" style="color:var(--text-tertiary)">⚠ Données N-1 non disponibles pour ce mois</div>`}
+          </div>
+          <div>
+            ${renderCompareBars(n1m, g.ca_total)}
+          </div>
+        </div>
       </div>
 
       <div class="r-section-label">3 — CUMUL SAISON</div>
@@ -1733,6 +1762,7 @@ function buildContext(allWeeksRows, selectedWeek) {
     traj,
     hasRush, hasFarwest,
     visiteurs: visiteursParSemaine[selectedWeek] ?? null,
+    visiteursN1: visiteursN1ParSemaine[selectedWeek] ?? null,
     totalPages: 4,
   };
 }
@@ -1743,6 +1773,7 @@ function buildContext(allWeeksRows, selectedWeek) {
 let currentAllWeeksRows = null;
 let currentMode = null; // "weekly" | "monthly" | null
 const visiteursParSemaine = {}; // { "S21": 8423, ... }
+const visiteursN1ParSemaine = {}; // { "S21": 8200, ... }
 // ============================================
 // COMPUTE MENSUEL
 // ============================================
@@ -1834,6 +1865,7 @@ function computeMonthlyTrajectory(allWeeksRows, currentMonthKey) {
 }
 
 const visiteursParMois = {}; // { "2026-04": 25000, ... }
+const visiteursN1ParMois = {}; // { "2026-04": 24000, ... }
 
 function buildMonthlyContext(allWeeksRows, monthKey) {
   const { rows, weeksUsed } = filterRowsByMonth(allWeeksRows, monthKey);
@@ -1882,6 +1914,8 @@ function buildMonthlyContext(allWeeksRows, monthKey) {
     monthlyTrajectory,
     hasRush, hasFarwest, nbBoutiques, totalPages,
     visiteurs: visiteursParMois[monthKey] ?? null,
+    visiteursN1: visiteursN1ParMois[monthKey] ?? null,
+    n1_monthly: N1_MENSUEL[monthKey] ?? null,
     weeksUsed,
   };
 }
@@ -1891,8 +1925,10 @@ const fileInput  = document.getElementById("fileInput");
 const fileName   = document.getElementById("fileName");
 const weekSelect = document.getElementById("weekSelect");
 const visiteursInput = document.getElementById("visiteursInput");
+const visiteursN1Input = document.getElementById("visiteursN1Input");
 const monthSelect = document.getElementById("monthSelect");
 const visiteursMonthInput = document.getElementById("visiteursMonthInput");
+const visiteursN1MonthInput = document.getElementById("visiteursN1MonthInput");
 const btnPrint   = document.getElementById("btnPrint");
 const btnReset   = document.getElementById("btnReset");
 const logZone    = document.getElementById("logZone");
@@ -1925,6 +1961,8 @@ weekSelect.addEventListener("change", () => {
   if (!weekSelect.value) return;
   const v = visiteursParSemaine[weekSelect.value];
   visiteursInput.value = (v !== undefined && v !== null) ? v : "";
+  const v1 = visiteursN1ParSemaine[weekSelect.value];
+  visiteursN1Input.value = (v1 !== undefined && v1 !== null) ? v1 : "";
   renderReport(weekSelect.value);
 });
 
@@ -1940,11 +1978,25 @@ visiteursInput.addEventListener("input", () => {
   if (currentMode === "weekly") renderReport(weekSelect.value);
 });
 
+visiteursN1Input.addEventListener("input", () => {
+  if (!weekSelect.value) return;
+  const raw = visiteursN1Input.value.trim();
+  if (raw === "") {
+    delete visiteursN1ParSemaine[weekSelect.value];
+  } else {
+    const n = parseInt(raw, 10);
+    if (!Number.isNaN(n) && n >= 0) visiteursN1ParSemaine[weekSelect.value] = n;
+  }
+  if (currentMode === "weekly") renderReport(weekSelect.value);
+});
+
 // === MENSUEL ===
 monthSelect.addEventListener("change", () => {
   if (!monthSelect.value) return;
   const v = visiteursParMois[monthSelect.value];
   visiteursMonthInput.value = (v !== undefined && v !== null) ? v : "";
+  const v1m = visiteursN1ParMois[monthSelect.value];
+  visiteursN1MonthInput.value = (v1m !== undefined && v1m !== null) ? v1m : "";
   renderMonthlyReport(monthSelect.value);
 });
 
@@ -1960,21 +2012,39 @@ visiteursMonthInput.addEventListener("input", () => {
   if (currentMode === "monthly") renderMonthlyReport(monthSelect.value);
 });
 
+visiteursN1MonthInput.addEventListener("input", () => {
+  if (!monthSelect.value) return;
+  const raw = visiteursN1MonthInput.value.trim();
+  if (raw === "") {
+    delete visiteursN1ParMois[monthSelect.value];
+  } else {
+    const n = parseInt(raw, 10);
+    if (!Number.isNaN(n) && n >= 0) visiteursN1ParMois[monthSelect.value] = n;
+  }
+  if (currentMode === "monthly") renderMonthlyReport(monthSelect.value);
+});
+
 btnReset.addEventListener("click", () => {
   currentAllWeeksRows = null;
   currentMode = null;
   for (const k of Object.keys(visiteursParSemaine)) delete visiteursParSemaine[k];
   for (const k of Object.keys(visiteursParMois)) delete visiteursParMois[k];
+  for (const k of Object.keys(visiteursN1ParSemaine)) delete visiteursN1ParSemaine[k];
+  for (const k of Object.keys(visiteursN1ParMois)) delete visiteursN1ParMois[k];
   fileName.textContent = "";
   fileInput.value = "";
   weekSelect.innerHTML = `<option value="">— Charger un fichier d'abord —</option>`;
   weekSelect.disabled = true;
   visiteursInput.value = "";
   visiteursInput.disabled = true;
+  visiteursN1Input.value = "";
+  visiteursN1Input.disabled = true;
   monthSelect.innerHTML = `<option value="">— Charger un fichier d'abord —</option>`;
   monthSelect.disabled = true;
   visiteursMonthInput.value = "";
   visiteursMonthInput.disabled = true;
+  visiteursN1MonthInput.value = "";
+  visiteursN1MonthInput.disabled = true;
   btnPrint.disabled = true;
   btnReset.disabled = true;
   reportContainer.classList.remove("ready");
@@ -2023,13 +2093,17 @@ function handleFile(file) {
 
       weekSelect.disabled = false;
       visiteursInput.disabled = false;
+      visiteursN1Input.disabled = false;
       monthSelect.disabled = false;
       visiteursMonthInput.disabled = false;
+      visiteursN1MonthInput.disabled = false;
       btnPrint.disabled = false;
       btnReset.disabled = false;
 
       const v = visiteursParSemaine[weekSelect.value];
       visiteursInput.value = (v !== undefined && v !== null) ? v : "";
+      const v1 = visiteursN1ParSemaine[weekSelect.value];
+      visiteursN1Input.value = (v1 !== undefined && v1 !== null) ? v1 : "";
 
       log(`Fichier chargé. ${sorted.length} semaine(s) : ${sorted.join(", ")}. ${allMonths.length} mois disponibles : ${allMonths.map(monthLabel).join(", ")}.`, "success");
       renderReport(weekSelect.value);
