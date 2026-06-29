@@ -460,6 +460,10 @@ const BOUTIQUE_MAP = {
   "boutique water jump": "Boutique Rush Canyon",
 };
 
+// PDV autorisés pour ce générateur O'Fun (insensible à la casse)
+// Les lignes dont le PDV ne figure pas ici sont ignorées à la lecture.
+const PDV_WHITELIST = new Set(["boutique restaurant", "boutique water jump"]);
+
 // Couleurs des boutiques
 const COLOR_RUSH    = "#4a6d8c"; // bleu Rush Canyon
 const COLOR_FARWEST = "#c98a40"; // or Far West
@@ -551,6 +555,14 @@ const pctEvol = (n, n1) => {
 };
 
 const semNum = (name) => parseInt(name.replace(/\D/g, ""), 10);
+
+// Retourne le numéro de semaine ISO 8601 d'une date
+function getISOWeek(date) {
+  const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
+  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+  return Math.ceil(((d - yearStart) / 86400000 + 1) / 7);
+}
 
 // Normalisation des noms de boutique
 const normalizeBoutique = (raw) => {
@@ -656,6 +668,10 @@ function parseSheetRows(workbook, sheetName) {
     else if (typeof r[0] === "number") dt = new Date(Math.round((r[0] - 25569) * 86400 * 1000));
     else dt = new Date(r[0]);
     if (Number.isNaN(dt.getTime())) continue;
+
+    // Filtrage PDV : ignorer les lignes qui n'appartiennent pas à ce générateur O'Fun
+    const pdvKey = r[5] ? String(r[5]).trim().toLowerCase() : null;
+    if (!pdvKey || !PDV_WHITELIST.has(pdvKey)) continue;
 
     // Catégorie : si vide, déduire ("Chapeau" → "Western")
     let cat = r[2];
@@ -2061,16 +2077,33 @@ function handleFile(file) {
   reader.onload = (e) => {
     try {
       const wb = XLSX.read(new Uint8Array(e.target.result), { type: "array", cellDates: true });
-      const weekSheets = wb.SheetNames.filter(n => /^S\d+$/.test(n));
-      if (!weekSheets.length) {
-        log("Aucun onglet semaine détecté (attendu : S14, S15, …).", "error");
-        return;
-      }
-
-      // Parse toutes les semaines
+      let weekSheets = wb.SheetNames.filter(n => /^S\d+$/.test(n));
       const allWeeksRows = {};
-      for (const w of weekSheets) {
-        allWeeksRows[w] = parseSheetRows(wb, w);
+
+      if (weekSheets.length) {
+        // Format classique : un onglet par semaine (S15, S16, …)
+        for (const w of weekSheets) {
+          allWeeksRows[w] = parseSheetRows(wb, w);
+        }
+      } else {
+        // Nouveau format : feuille unique multi-PDV, regroupement par semaine ISO
+        const singleSheet = wb.SheetNames[0];
+        if (!singleSheet) {
+          log("Aucun onglet détecté dans le fichier.", "error");
+          return;
+        }
+        const rawRows = parseSheetRows(wb, singleSheet);
+        if (!rawRows.length) {
+          log("Aucune donnée O'Fun détectée dans ce fichier (vérifier la colonne Point de Vente).", "error");
+          return;
+        }
+        for (const r of rawRows) {
+          const wName = `S${getISOWeek(r.date)}`;
+          r._sheet = wName;
+          if (!allWeeksRows[wName]) allWeeksRows[wName] = [];
+          allWeeksRows[wName].push(r);
+        }
+        weekSheets = Object.keys(allWeeksRows);
       }
       currentAllWeeksRows = allWeeksRows;
 
