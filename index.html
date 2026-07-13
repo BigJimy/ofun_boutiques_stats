@@ -481,53 +481,57 @@ const CAT_PALETTE = [
 // ============================================
 // ⚠️  DONNÉES N-1 — codées en dur, à mettre à jour ici si besoin
 //
-// Sources :
-//   - S15 à S18 : extraites du fichier "BOUTIQUE_AVRIL_2025.xlsx"
-//                 (somme des lignes CA HT + REGUL net, en Crédit - Débit)
-//   - S19 à S40 : extraites du fichier "Recap_CA_HT_par_semaine.xlsx"
+// Source : fichier "CA 2025 gants + casiers.xlsx" (CA HT réel jour par jour,
+// saison 2025 = uniquement gants accrobranche + casiers, pas encore de vente
+// boutique/souvenirs cette saison-là → correspond au CA total N-1).
+// Corrige les chiffres précédents (BOUTIQUE_AVRIL_2025.xlsx / Recap_CA_HT_par_semaine.xlsx)
+// qui comportaient des erreurs.
+// Octobre et novembre 2025 pas encore disponibles → à compléter plus tard.
 //
 // Le rapport affiche l'évolution N vs N-1 sur le CA HT total de la semaine.
 // Si une semaine n'est pas listée ici, l'évolution affichera "—".
 // Si une semaine est à 0, le rapport affichera "Boutiques fermées en N-1".
 // ============================================
 const N1_HEBDO = {
-  "S15":  101.71,
-  "S16":  277.30,
-  "S17":  138.27,
-  "S18":  153.93,
-  "S19":  581.53,
-  "S20":  226.64,
-  "S21":    0.00,
-  "S22":  363.30,
-  "S23":  903.96,
-  "S24":  208.33,
-  "S25":    0.00,
-  "S26":  264.99,
-  "S27":  245.83,
-  "S28":  541.69,
-  "S29":  528.35,
-  "S30":  780.86,
-  "S31":  620.85,
-  "S32": 1356.11,
-  "S33": 1448.41,
-  "S34": 2528.28,
-  "S35": 1288.11,
-  "S36":  122.39,
-  "S37":  187.52,
-  "S38":   63.32,
-  "S39":  167.48,
-  "S40":   31.66,
+  "S14":   85.04,
+  "S15":  224.14,
+  "S16":  158.28,
+  "S17":  106.59,
+  "S18":  479.89,
+  "S19":  308.26,
+  "S20":  221.64,
+  "S21":  132.49,
+  "S22":  969.78,
+  "S23":  275.73,
+  "S24":  312.40,
+  "S25":  198.25,
+  "S26":  419.90,
+  "S27":  635.70,
+  "S28": 1139.74,
+  "S29": 1043.00,
+  "S30": 1259.57,
+  "S31": 1404.56,
+  "S32": 2300.73,
+  "S33": 2914.19,
+  "S34": 2417.57,
+  "S35": 1147.12,
+  "S36":  328.22,
+  "S37":  114.13,
+  "S38":  300.74,
+  "S39":  121.62,
+  "S40":    0.00,
 };
 
-// Mensuel : somme proratisée des semaines N1_HEBDO par mois calendaire 2025
-// (les semaines à cheval sont réparties au prorata du nb de jours dans chaque mois)
+// Mensuel : somme exacte des CA HT journaliers 2025 par mois calendaire
+// (données réelles jour par jour désormais disponibles, plus besoin de proratiser
+// les semaines à cheval sur deux mois)
 const N1_MENSUEL = {
-  "2026-04":  583.25,  // Avril 2025    : S15+S16+S17 + S18×3/7
-  "2026-05": 1207.53,  // Mai 2025      : S18×4/7 + S19+S20+S21 + S22×6/7
-  "2026-06": 1464.30,  // Juin 2025     : S22×1/7 + S23+S24+S25+S26 + S27×1/7
-  "2026-07": 2416.38,  // Juillet 2025  : S27×6/7 + S28+S29+S30 + S31×4/7
-  "2026-08": 6886.99,  // Août 2025     : S31×3/7 + S32+S33+S34+S35
-  "2026-09":  549.76,  // Septembre 2025: S36+S37+S38+S39 + S40×2/7
+  "2026-04":  594.03,  // Avril 2025
+  "2026-05": 1917.94,  // Mai 2025
+  "2026-06": 1380.42,  // Juin 2025
+  "2026-07": 4866.94,  // Juillet 2025
+  "2026-08": 9395.24,  // Août 2025
+  "2026-09":  864.71,  // Septembre 2025
 };
 
 // ============================================
