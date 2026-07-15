@@ -408,9 +408,6 @@ button.secondary:hover { background: var(--bg-soft); }
       <select id="weekSelect" disabled>
         <option value="">— Charger un fichier d'abord —</option>
       </select>
-      <label for="visiteursInput" style="margin-left:0.5rem;">Visiteurs N :</label>
-      <input type="number" id="visiteursInput" min="0" step="1" placeholder="Nb entrées parc" disabled
-             style="padding:8px 12px;border-radius:6px;border:0.5px solid var(--border);background:white;font-size:13px;font-family:inherit;width:140px;">
       <label for="visiteursN1Input" style="margin-left:0.5rem;">Visiteurs N-1 :</label>
       <input type="number" id="visiteursN1Input" min="0" step="1" placeholder="Nb entrées N-1" disabled
              style="padding:8px 12px;border-radius:6px;border:0.5px solid var(--border);background:white;font-size:13px;font-family:inherit;width:140px;">
@@ -1049,7 +1046,7 @@ function renderPanierJourTable(joursSemaine) {
     </tr>`).join("");
   return `
     <table class="prod-table">
-      <thead><tr><th>Jour</th><th>CA HT total</th><th>Visiteurs</th><th>Panier moyen</th></tr></thead>
+      <thead><tr><th>Jour</th><th style="text-align:right;">CA HT total</th><th style="text-align:right;">Visiteurs</th><th>Panier moyen</th></tr></thead>
       <tbody>${rows}</tbody>
     </table>
     <div style="font-size:10px;color:var(--text-tertiary);margin-top:6px;">
@@ -1909,7 +1906,7 @@ function buildContext(allWeeksRows, selectedWeek) {
     global, rush, farwest,
     traj,
     hasRush, hasFarwest,
-    visiteurs: visiteursParSemaine[selectedWeek] ?? null,
+    visiteurs: sumVisiteursSemaine(isoRange),
     visiteursN1: visiteursN1ParSemaine[selectedWeek] ?? null,
     byDay, joursSemaine, top5,
     totalPages: 5,
@@ -1921,9 +1918,8 @@ function buildContext(allWeeksRows, selectedWeek) {
 // ============================================
 let currentAllWeeksRows = null;
 let currentMode = null; // "weekly" | "monthly" | null
-const visiteursParSemaine = {}; // { "S21": 8423, ... }
 const visiteursN1ParSemaine = {}; // { "S21": 8200, ... }
-const visiteursParJour = {}; // { "2026-06-15": 320, ... }
+const visiteursParJour = {}; // { "2026-06-15": 320, ... } — remplace l'ancien "Visiteurs N", somme automatiquement
 // ============================================
 // COMPUTE MENSUEL
 // ============================================
@@ -2044,6 +2040,18 @@ function buildJoursSemaine(isoRange, byDay) {
   return jours;
 }
 
+// Somme des visiteurs saisis jour par jour sur la semaine (remplace l'ancien champ "Visiteurs N")
+function sumVisiteursSemaine(isoRange) {
+  let total = 0, any = false;
+  const d = new Date(isoRange.monday);
+  for (let i = 0; i < 7; i++) {
+    const v = visiteursParJour[dayKeyOf(d)];
+    if (v !== undefined && v !== null) { total += v; any = true; }
+    d.setDate(d.getDate() + 1);
+  }
+  return any ? total : null;
+}
+
 // Trajectoire mensuelle (cumul saison par mois)
 function computeMonthlyTrajectory(allWeeksRows, currentMonthKey) {
   const allMonths = getAllMonthsFromRows(allWeeksRows);
@@ -2127,7 +2135,6 @@ const dropZone   = document.getElementById("dropZone");
 const fileInput  = document.getElementById("fileInput");
 const fileName   = document.getElementById("fileName");
 const weekSelect = document.getElementById("weekSelect");
-const visiteursInput = document.getElementById("visiteursInput");
 const visiteursN1Input = document.getElementById("visiteursN1Input");
 const monthSelect = document.getElementById("monthSelect");
 const visiteursMonthInput = document.getElementById("visiteursMonthInput");
@@ -2164,12 +2171,14 @@ fileInput.addEventListener("change", (e) => {
 function renderVisiteursJourInputs(isoRange) {
   const row = document.getElementById("visiteursJourRow");
   row.innerHTML = "";
+  row.style.cssText = "display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.4rem 1rem;";
   const d = new Date(isoRange.monday);
   for (let i = 0; i < 7; i++) {
     const key = dayKeyOf(d);
+    const cell = document.createElement("div");
+    cell.style.cssText = "display:flex;align-items:center;gap:0.4rem;";
     const label = document.createElement("label");
     label.textContent = `${JOURS_LABELS[i].slice(0, 3)} ${String(d.getDate()).padStart(2, "0")}/${String(d.getMonth() + 1).padStart(2, "0")} :`;
-    label.style.marginLeft = "0.3rem";
     const input = document.createElement("input");
     input.type = "number"; input.min = "0"; input.step = "1";
     input.placeholder = "Visiteurs";
@@ -2185,16 +2194,15 @@ function renderVisiteursJourInputs(isoRange) {
       }
       if (currentMode === "weekly") renderReport(weekSelect.value);
     });
-    row.appendChild(label);
-    row.appendChild(input);
+    cell.appendChild(label);
+    cell.appendChild(input);
+    row.appendChild(cell);
     d.setDate(d.getDate() + 1);
   }
 }
 
 weekSelect.addEventListener("change", () => {
   if (!weekSelect.value) return;
-  const v = visiteursParSemaine[weekSelect.value];
-  visiteursInput.value = (v !== undefined && v !== null) ? v : "";
   const v1 = visiteursN1ParSemaine[weekSelect.value];
   visiteursN1Input.value = (v1 !== undefined && v1 !== null) ? v1 : "";
 
@@ -2207,18 +2215,6 @@ weekSelect.addEventListener("change", () => {
   }
 
   renderReport(weekSelect.value);
-});
-
-visiteursInput.addEventListener("input", () => {
-  if (!weekSelect.value) return;
-  const raw = visiteursInput.value.trim();
-  if (raw === "") {
-    delete visiteursParSemaine[weekSelect.value];
-  } else {
-    const n = parseInt(raw, 10);
-    if (!Number.isNaN(n) && n >= 0) visiteursParSemaine[weekSelect.value] = n;
-  }
-  if (currentMode === "weekly") renderReport(weekSelect.value);
 });
 
 visiteursN1Input.addEventListener("input", () => {
@@ -2270,7 +2266,6 @@ visiteursN1MonthInput.addEventListener("input", () => {
 btnReset.addEventListener("click", () => {
   currentAllWeeksRows = null;
   currentMode = null;
-  for (const k of Object.keys(visiteursParSemaine)) delete visiteursParSemaine[k];
   for (const k of Object.keys(visiteursParMois)) delete visiteursParMois[k];
   for (const k of Object.keys(visiteursN1ParSemaine)) delete visiteursN1ParSemaine[k];
   for (const k of Object.keys(visiteursN1ParMois)) delete visiteursN1ParMois[k];
@@ -2279,8 +2274,6 @@ btnReset.addEventListener("click", () => {
   fileInput.value = "";
   weekSelect.innerHTML = `<option value="">— Charger un fichier d'abord —</option>`;
   weekSelect.disabled = true;
-  visiteursInput.value = "";
-  visiteursInput.disabled = true;
   visiteursN1Input.value = "";
   visiteursN1Input.disabled = true;
   document.getElementById("visiteursJourRow").innerHTML = "";
@@ -2354,7 +2347,6 @@ function handleFile(file) {
       if (defaultWeek) weekSelect.value = defaultWeek;
 
       weekSelect.disabled = false;
-      visiteursInput.disabled = false;
       visiteursN1Input.disabled = false;
       monthSelect.disabled = false;
       visiteursMonthInput.disabled = false;
@@ -2362,10 +2354,14 @@ function handleFile(file) {
       btnPrint.disabled = false;
       btnReset.disabled = false;
 
-      const v = visiteursParSemaine[weekSelect.value];
-      visiteursInput.value = (v !== undefined && v !== null) ? v : "";
       const v1 = visiteursN1ParSemaine[weekSelect.value];
       visiteursN1Input.value = (v1 !== undefined && v1 !== null) ? v1 : "";
+
+      if (weekSelect.value && allWeeksRows[weekSelect.value] && allWeeksRows[weekSelect.value].length) {
+        const wRows = allWeeksRows[weekSelect.value];
+        const wYear = new Date(Math.max(...wRows.map(r => r.date.getTime()))).getFullYear();
+        renderVisiteursJourInputs(getIsoWeekRange(wYear, semNum(weekSelect.value)));
+      }
 
       log(`Fichier chargé. ${sorted.length} semaine(s) : ${sorted.join(", ")}. ${allMonths.length} mois disponibles : ${allMonths.map(monthLabel).join(", ")}.`, "success");
       renderReport(weekSelect.value);
