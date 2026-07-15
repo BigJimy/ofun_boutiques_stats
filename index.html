@@ -415,6 +415,8 @@ button.secondary:hover { background: var(--bg-soft); }
       <input type="number" id="visiteursN1Input" min="0" step="1" placeholder="Nb entrées N-1" disabled
              style="padding:8px 12px;border-radius:6px;border:0.5px solid var(--border);background:white;font-size:13px;font-family:inherit;width:140px;">
     </div>
+    <div style="margin-top:0.6rem;font-size:11px;color:var(--text-secondary,#5f5e5a);">Visiteurs par jour (pour le panier moyen journalier) :</div>
+    <div class="ui-controls" id="visiteursJourRow" style="margin-top:0.3rem;"></div>
   </div>
 
   <!-- Bloc 2 : Rapport mensuel -->
@@ -532,6 +534,26 @@ const N1_MENSUEL = {
   "2026-07": 4866.94,  // Juillet 2025
   "2026-08": 9395.24,  // Août 2025
   "2026-09":  864.71,  // Septembre 2025
+};
+
+// CA HT boutique journalier N-1 (saison 2025), pour le Top 5 "toutes saisons confondues".
+// Une seule boutique existait en 2025 (comparée au cumul Rush Canyon + Far West en 2026).
+// Source : STATS OFUN SAISON 2025 2026.xlsx (colonne CA HT N-1). Fichier source incomplet
+// au moment de l'extraction (seuls ces jours étaient renseignés) → à compléter si le fichier
+// source est mis à jour.
+const DAILY_CA_N1 = {
+  "2025-06-03":   2.68,
+  "2025-06-06":  97.49,
+  "2025-06-07":  68.34,
+  "2025-06-09":  35.84,
+  "2025-06-13": 138.33,
+  "2025-06-14":  41.66,
+  "2025-06-17":  20.00,
+  "2025-06-20":  80.83,
+  "2025-06-21":  15.00,
+  "2025-06-24":   1.67,
+  "2025-06-27":  55.83,
+  "2025-06-28": 190.00,
 };
 
 // ============================================
@@ -968,6 +990,88 @@ function renderWeekBars(byWeek, year, month) {
     <rect x="${padL+160}" y="${legY-7}" width="11" height="11" fill="${COLOR_SERV}"/>
     <text x="${padL+176}" y="${legY+2}" font-size="10" fill="#5f5e5a">Gants et casiers</text>`;
   return `<svg viewBox="0 0 ${W} ${H+5}" style="width:100%;height:${H+5}px">${grid}${bars}${legend}</svg>`;
+}
+
+// Bar chart CA HT par jour de la semaine (Lundi → Dimanche)
+function renderWeekdayChart(joursSemaine) {
+  const W = 600, H = 205;
+  const padL = 50, padR = 20, padT = 25, padB = 40;
+  const iw = W - padL - padR, ih = H - padT - padB;
+  const n = joursSemaine.length;
+  const totals = joursSemaine.map(j => j.ca_total);
+  const maxV = Math.max(...totals, 1) * 1.20;
+  const barW = (iw / n) * 0.55;
+  const gap = (iw / n) * 0.45;
+
+  let grid = "";
+  [0, maxV/3, 2*maxV/3, maxV].forEach((v, i) => {
+    const y = padT + ih - (v / maxV) * ih;
+    const stroke = i === 0 ? "#d3d1c7" : "#e6e4dd";
+    grid += `<line x1="${padL}" y1="${y}" x2="${W-padR}" y2="${y}" stroke="${stroke}" stroke-width="0.5"/>`;
+    grid += `<text x="${padL-5}" y="${y+3}" font-size="9" fill="#888780" text-anchor="end">${fmtMoneyK(v)}</text>`;
+  });
+
+  let bars = "";
+  joursSemaine.forEach((j, i) => {
+    const hHors = j.ca_hors > 0 ? (j.ca_hors / maxV) * ih : 0;
+    const hServ = j.ca_service > 0 ? (j.ca_service / maxV) * ih : 0;
+    const x = padL + i * (iw / n) + gap / 2;
+    const yHors = padT + ih - hHors;
+    const yServ = yHors - hServ;
+
+    bars += `<rect x="${x.toFixed(1)}" y="${yHors.toFixed(1)}" width="${barW.toFixed(1)}" height="${hHors.toFixed(1)}" fill="${COLOR_BRAND}"/>`;
+    if (j.ca_service > 0) bars += `<rect x="${x.toFixed(1)}" y="${yServ.toFixed(1)}" width="${barW.toFixed(1)}" height="${hServ.toFixed(1)}" fill="${COLOR_SERV}"/>`;
+    bars += `<text x="${(x + barW/2).toFixed(1)}" y="${H-22}" font-size="10" fill="#5f5e5a" text-anchor="middle" font-weight="500">${j.label.slice(0,3)}</text>`;
+    bars += `<text x="${(x + barW/2).toFixed(1)}" y="${H-11}" font-size="8" fill="#888780" text-anchor="middle">${j.dateFr}</text>`;
+    if (j.ca_total > 0) {
+      const yTop = padT + ih - (j.ca_total / maxV) * ih;
+      bars += `<text x="${(x + barW/2).toFixed(1)}" y="${(yTop-3).toFixed(1)}" font-size="9" fill="#5f5e5a" text-anchor="middle" font-weight="500">${fmtMoney(j.ca_total, 0)}</text>`;
+    }
+  });
+
+  const legY = H - 2;
+  const legend = `
+    <rect x="${padL}" y="${legY-7}" width="11" height="11" fill="${COLOR_BRAND}"/>
+    <text x="${padL+16}" y="${legY+2}" font-size="10" fill="#5f5e5a">Hors gants et casiers</text>
+    <rect x="${padL+160}" y="${legY-7}" width="11" height="11" fill="${COLOR_SERV}"/>
+    <text x="${padL+176}" y="${legY+2}" font-size="10" fill="#5f5e5a">Gants et casiers</text>`;
+  return `<svg viewBox="0 0 ${W} ${H+15}" style="width:100%;height:${H+15}px">${grid}${bars}${legend}</svg>`;
+}
+
+// Tableau panier moyen par jour (visiteurs saisis manuellement, un par jour)
+function renderPanierJourTable(joursSemaine) {
+  const rows = joursSemaine.map(j => `
+    <tr>
+      <td class="prod">${j.label} ${j.dateFr}</td>
+      <td class="val">${fmtMoney(j.ca_total)}</td>
+      <td class="val">${j.visiteurs !== null ? j.visiteurs.toLocaleString("fr-FR") : "—"}</td>
+      <td class="val">${j.panier !== null ? fmtMoney(j.panier) : "—"}</td>
+    </tr>`).join("");
+  return `
+    <table class="prod-table">
+      <thead><tr><th>Jour</th><th>CA HT total</th><th>Visiteurs</th><th>Panier moyen</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+    <div style="font-size:10px;color:var(--text-tertiary);margin-top:6px;">
+      Renseigner le nombre de visiteurs de chaque jour dans le formulaire pour calculer son panier moyen.
+    </div>`;
+}
+
+// Tableau Top 5 des CA journaliers, toutes saisons confondues
+function renderTop5Table(top5) {
+  if (!top5.length) return `<div style="font-size:11px;color:var(--text-secondary)">Pas assez de données.</div>`;
+  const rows = top5.map((t, i) => `
+    <tr>
+      <td class="rank">${i + 1}</td>
+      <td class="prod">${dateKeyToLabel(t.date)}</td>
+      <td class="prod">${t.saison === "N" ? "Saison en cours" : "Saison 2025"}</td>
+      <td class="val">${fmtMoney(t.ca)}</td>
+    </tr>`).join("");
+  return `
+    <table class="prod-table">
+      <thead><tr><th>#</th><th>Jour</th><th>Saison</th><th>CA HT</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
 }
 
 // Courbe quotidienne : aires empilées CA total / CA hors, points sur jours avec ventes
@@ -1744,6 +1848,26 @@ function renderPage4(ctx) {
     ${renderFooter(week, 4, totalPages)}`;
 }
 
+// ============================================
+// PAGE 5 — CA par jour de semaine, panier moyen par jour, Top 5 toutes saisons
+// ============================================
+function renderPage5(ctx) {
+  const { week, totalPages, joursSemaine, top5 } = ctx;
+  return `
+    <div class="page-content">
+      ${renderHeader(week, 5, totalPages)}
+      <div class="r-section-label">10 — CA HT PAR JOUR DE LA SEMAINE</div>
+      <div class="r-block">${renderWeekdayChart(joursSemaine)}</div>
+
+      <div class="r-section-label">11 — PANIER MOYEN PAR JOUR</div>
+      <div class="r-block">${renderPanierJourTable(joursSemaine)}</div>
+
+      <div class="r-section-label">12 — TOP 5 DES MEILLEURS CA JOURNALIERS (TOUTES SAISONS CONFONDUES)</div>
+      <div class="r-block">${renderTop5Table(top5)}</div>
+    </div>
+    ${renderFooter(week, 5, totalPages)}`;
+}
+
 
 // ============================================
 // ORCHESTRATION : prépare le contexte pour les renderers
@@ -1776,6 +1900,10 @@ function buildContext(allWeeksRows, selectedWeek) {
   const isoRange = getIsoWeekRange(year, semNum(selectedWeek));
   const period = formatPeriod(isoRange.monday, isoRange.sunday);
 
+  const byDay = computeByDay(rows);
+  const joursSemaine = buildJoursSemaine(isoRange, byDay);
+  const top5 = computeTop5Days(allWeeksRows);
+
   return {
     week: { name: selectedWeek, period, year },
     global, rush, farwest,
@@ -1783,7 +1911,8 @@ function buildContext(allWeeksRows, selectedWeek) {
     hasRush, hasFarwest,
     visiteurs: visiteursParSemaine[selectedWeek] ?? null,
     visiteursN1: visiteursN1ParSemaine[selectedWeek] ?? null,
-    totalPages: 4,
+    byDay, joursSemaine, top5,
+    totalPages: 5,
   };
 }
 
@@ -1794,6 +1923,7 @@ let currentAllWeeksRows = null;
 let currentMode = null; // "weekly" | "monthly" | null
 const visiteursParSemaine = {}; // { "S21": 8423, ... }
 const visiteursN1ParSemaine = {}; // { "S21": 8200, ... }
+const visiteursParJour = {}; // { "2026-06-15": 320, ... }
 // ============================================
 // COMPUTE MENSUEL
 // ============================================
@@ -1859,6 +1989,59 @@ function computeByDay(rows) {
     v.ca_hors = +v.ca_hors.toFixed(2);
   });
   return byDay;
+}
+
+// Agrège le CA HT par jour sur TOUTES les semaines chargées (saison N), pour le Top 5
+function computeAllDaysN(allWeeksRows) {
+  const allDays = {};
+  Object.values(allWeeksRows).forEach(rows => {
+    const byDay = computeByDay(rows);
+    Object.entries(byDay).forEach(([k, v]) => {
+      allDays[k] = (allDays[k] || 0) + v.ca_total;
+    });
+  });
+  Object.keys(allDays).forEach(k => { allDays[k] = +allDays[k].toFixed(2); });
+  return allDays;
+}
+
+// Top 5 des CA journaliers, toutes saisons confondues (saison N chargée + N-1 codé en dur)
+function computeTop5Days(allWeeksRows) {
+  const allDaysN = computeAllDaysN(allWeeksRows);
+  const merged = [];
+  Object.entries(allDaysN).forEach(([date, ca]) => merged.push({ date, ca, saison: "N" }));
+  Object.entries(DAILY_CA_N1).forEach(([date, ca]) => merged.push({ date, ca, saison: "N-1" }));
+  merged.sort((a, b) => b.ca - a.ca);
+  return merged.slice(0, 5);
+}
+
+// Libellé jour + date FR courte à partir d'une clé "YYYY-MM-DD" (ex: "Lundi 15/06")
+const JOURS_LABELS = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"];
+function dateKeyToLabel(key) {
+  const [y, m, d] = key.split("-").map(Number);
+  const date = new Date(y, m - 1, d);
+  const jour = JOURS_LABELS[(date.getDay() + 6) % 7];
+  return `${jour} ${String(d).padStart(2, "0")}/${String(m).padStart(2, "0")}/${y}`;
+}
+
+// Construit les 7 jours (Lundi→Dimanche) de la semaine sélectionnée avec CA, visiteurs et panier moyen
+function buildJoursSemaine(isoRange, byDay) {
+  const jours = [];
+  const d = new Date(isoRange.monday);
+  for (let i = 0; i < 7; i++) {
+    const key = dayKeyOf(d);
+    const dd = byDay[key] || { ca_total: 0, ca_hors: 0, ca_service: 0 };
+    const visiteurs = visiteursParJour[key] ?? null;
+    const panier = (visiteurs && visiteurs > 0) ? dd.ca_total / visiteurs : null;
+    jours.push({
+      label: JOURS_LABELS[i],
+      key,
+      dateFr: `${String(d.getDate()).padStart(2, "0")}/${String(d.getMonth() + 1).padStart(2, "0")}`,
+      ca_total: dd.ca_total, ca_hors: dd.ca_hors, ca_service: dd.ca_service,
+      visiteurs, panier,
+    });
+    d.setDate(d.getDate() + 1);
+  }
+  return jours;
 }
 
 // Trajectoire mensuelle (cumul saison par mois)
@@ -1977,12 +2160,52 @@ fileInput.addEventListener("change", (e) => {
   const f = e.target.files[0]; if (f) handleFile(f);
 });
 
+// Génère les 7 inputs "visiteurs du jour" (Lundi→Dimanche) pour la semaine sélectionnée
+function renderVisiteursJourInputs(isoRange) {
+  const row = document.getElementById("visiteursJourRow");
+  row.innerHTML = "";
+  const d = new Date(isoRange.monday);
+  for (let i = 0; i < 7; i++) {
+    const key = dayKeyOf(d);
+    const label = document.createElement("label");
+    label.textContent = `${JOURS_LABELS[i].slice(0, 3)} ${String(d.getDate()).padStart(2, "0")}/${String(d.getMonth() + 1).padStart(2, "0")} :`;
+    label.style.marginLeft = "0.3rem";
+    const input = document.createElement("input");
+    input.type = "number"; input.min = "0"; input.step = "1";
+    input.placeholder = "Visiteurs";
+    input.style.cssText = "padding:6px 8px;border-radius:6px;border:0.5px solid var(--border);background:white;font-size:12px;font-family:inherit;width:80px;";
+    const v = visiteursParJour[key];
+    input.value = (v !== undefined && v !== null) ? v : "";
+    input.addEventListener("input", () => {
+      const raw = input.value.trim();
+      if (raw === "") delete visiteursParJour[key];
+      else {
+        const n = parseInt(raw, 10);
+        if (!Number.isNaN(n) && n >= 0) visiteursParJour[key] = n;
+      }
+      if (currentMode === "weekly") renderReport(weekSelect.value);
+    });
+    row.appendChild(label);
+    row.appendChild(input);
+    d.setDate(d.getDate() + 1);
+  }
+}
+
 weekSelect.addEventListener("change", () => {
   if (!weekSelect.value) return;
   const v = visiteursParSemaine[weekSelect.value];
   visiteursInput.value = (v !== undefined && v !== null) ? v : "";
   const v1 = visiteursN1ParSemaine[weekSelect.value];
   visiteursN1Input.value = (v1 !== undefined && v1 !== null) ? v1 : "";
+
+  const rows = (currentAllWeeksRows && currentAllWeeksRows[weekSelect.value]) || [];
+  if (rows.length) {
+    const dates = rows.map(r => r.date.getTime());
+    const year = new Date(Math.max(...dates)).getFullYear();
+    const isoRange = getIsoWeekRange(year, semNum(weekSelect.value));
+    renderVisiteursJourInputs(isoRange);
+  }
+
   renderReport(weekSelect.value);
 });
 
@@ -2051,6 +2274,7 @@ btnReset.addEventListener("click", () => {
   for (const k of Object.keys(visiteursParMois)) delete visiteursParMois[k];
   for (const k of Object.keys(visiteursN1ParSemaine)) delete visiteursN1ParSemaine[k];
   for (const k of Object.keys(visiteursN1ParMois)) delete visiteursN1ParMois[k];
+  for (const k of Object.keys(visiteursParJour)) delete visiteursParJour[k];
   fileName.textContent = "";
   fileInput.value = "";
   weekSelect.innerHTML = `<option value="">— Charger un fichier d'abord —</option>`;
@@ -2059,6 +2283,7 @@ btnReset.addEventListener("click", () => {
   visiteursInput.disabled = true;
   visiteursN1Input.value = "";
   visiteursN1Input.disabled = true;
+  document.getElementById("visiteursJourRow").innerHTML = "";
   monthSelect.innerHTML = `<option value="">— Charger un fichier d'abord —</option>`;
   monthSelect.disabled = true;
   visiteursMonthInput.value = "";
@@ -2160,16 +2385,18 @@ function renderReport(weekName) {
     log(`Aucune donnée pour la semaine ${weekName}.`, "error");
     return;
   }
-  // Reconstruit le container pour 4 pages
+  // Reconstruit le container pour 5 pages
   reportContainer.innerHTML = `
     <div class="page-sheet" id="page1"></div>
     <div class="page-sheet" id="page2"></div>
     <div class="page-sheet" id="page3"></div>
-    <div class="page-sheet" id="page4"></div>`;
+    <div class="page-sheet" id="page4"></div>
+    <div class="page-sheet" id="page5"></div>`;
   document.getElementById("page1").innerHTML = renderPage1(ctx);
   document.getElementById("page2").innerHTML = renderPage2(ctx);
   document.getElementById("page3").innerHTML = renderPage3(ctx);
   document.getElementById("page4").innerHTML = renderPage4(ctx);
+  document.getElementById("page5").innerHTML = renderPage5(ctx);
   reportContainer.classList.add("ready");
   currentMode = "weekly";
 }
