@@ -1040,17 +1040,17 @@ function renderPanierJourTable(joursSemaine) {
   const rows = joursSemaine.map(j => `
     <tr>
       <td class="prod">${j.label} ${j.dateFr}</td>
-      <td class="val">${fmtMoney(j.ca_total)}</td>
+      <td class="val">${fmtMoney(j.ca_hors)}</td>
       <td class="val">${j.visiteurs !== null ? j.visiteurs.toLocaleString("fr-FR") : "—"}</td>
       <td class="val">${j.panier !== null ? fmtMoney(j.panier) : "—"}</td>
     </tr>`).join("");
   return `
     <table class="prod-table">
-      <thead><tr><th>Jour</th><th style="text-align:right;">CA HT total</th><th style="text-align:right;">Visiteurs</th><th>Panier moyen</th></tr></thead>
+      <thead><tr><th>Jour</th><th style="text-align:right;">CA HT hors gants/casiers</th><th style="text-align:right;">Visiteurs</th><th>Panier moyen</th></tr></thead>
       <tbody>${rows}</tbody>
     </table>
     <div style="font-size:10px;color:var(--text-tertiary);margin-top:6px;">
-      Renseigner le nombre de visiteurs de chaque jour dans le formulaire pour calculer son panier moyen.
+      Panier moyen calculé sur le CA HT hors gants et casiers (catégorie "Service" exclue). Renseigner le nombre de visiteurs de chaque jour dans le formulaire pour calculer son panier moyen.
     </div>`;
 }
 
@@ -1856,7 +1856,7 @@ function renderPage5(ctx) {
       <div class="r-section-label">10 — CA HT PAR JOUR DE LA SEMAINE</div>
       <div class="r-block">${renderWeekdayChart(joursSemaine)}</div>
 
-      <div class="r-section-label">11 — PANIER MOYEN PAR JOUR</div>
+      <div class="r-section-label">11 — PANIER MOYEN PAR JOUR (CA HT HORS GANTS ET CASIERS)</div>
       <div class="r-block">${renderPanierJourTable(joursSemaine)}</div>
 
       <div class="r-section-label">12 — TOP 5 DES MEILLEURS CA JOURNALIERS (TOUTES SAISONS CONFONDUES)</div>
@@ -2027,7 +2027,7 @@ function buildJoursSemaine(isoRange, byDay) {
     const key = dayKeyOf(d);
     const dd = byDay[key] || { ca_total: 0, ca_hors: 0, ca_service: 0 };
     const visiteurs = visiteursParJour[key] ?? null;
-    const panier = (visiteurs && visiteurs > 0) ? dd.ca_total / visiteurs : null;
+    const panier = (visiteurs && visiteurs > 0) ? dd.ca_hors / visiteurs : null;
     jours.push({
       label: JOURS_LABELS[i],
       key,
